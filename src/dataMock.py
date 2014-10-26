@@ -1,5 +1,6 @@
 import random
 import numpy
+import json
 
 def saturate (x, minimum, maximum):
 	if x < minimum:
@@ -66,3 +67,5 @@ def simulateGame ():
 
 nGames = 100
 x = distributionOfMaterial (nGames)
+with open('data.json', 'w') as outfile:
+	json.dump(x,outfile)

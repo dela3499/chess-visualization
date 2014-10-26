@@ -33,3 +33,6 @@ Mockup data and start working with a D3 example with a similar form
 
 # Hour 12 (5:40pm, Friday Oct 24, 2014)
 Finish mocking up data for material distribution chart
+
+# Hour 13 (11:24pm, Sunday Oct 26, 2014)
+Customize d3 example bar chart with new data

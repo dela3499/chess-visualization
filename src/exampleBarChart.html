@@ -1,0 +1,2580 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=1024, user-scalable=no">
+
+	<title>Data Driven Documents: Data Visualization Using D3.js</title>
+	
+	<!-- Required stylesheet -->
+	<link rel="stylesheet" href="core/deck.core.css">
+	
+	<!-- Extension CSS files go here. Remove or add as needed. -->
+	<link rel="stylesheet" href="extensions/goto/deck.goto.css">
+	<link rel="stylesheet" href="extensions/menu/deck.menu.css">
+	<link rel="stylesheet" href="extensions/navigation/deck.navigation.css">
+	<link rel="stylesheet" href="extensions/status/deck.status.css">
+	<link rel="stylesheet" href="extensions/hash/deck.hash.css">
+	<link rel="stylesheet" href="extensions/codemirror/deck.codemirror.css">
+	<link rel="stylesheet" href="extensions/codemirror/themes/default.css">
+	<!-- <link rel="stylesheet" href="extensions/scale/deck.scale.css"> -->
+
+	<!-- Style theme. More available in /themes/style/ or create your own. 
+	<link rel="stylesheet" href="themes/style/swiss.css">-->
+
+    <style>
+        .exampleLine { stroke: red; }
+        .exampleText { stroke: green; font: 25px sans-serif; }
+
+        .pieLabels {
+            font-family: sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            fill: white;
+        }
+    </style>
+	
+	<!-- Transition theme. More available in /themes/transition/ or create your own. -->
+	<link rel="stylesheet" href="themes/transition/horizontal-slide.css">
+	<link rel="stylesheet" href="assets/css/custom.css">
+	
+	<!-- Required Modernizr file -->
+	<script src="modernizr.custom.js"></script>
+	<script src="assets/js/d3.min.js"></script>
+    <script>
+        var dataset;
+        d3.csv('data/homesales2010.csv', function(d) {
+                return {
+                    key: d.state,
+                    value: +d.value
+                };
+            },
+            function(d){
+                dataset = d;
+            }
+        );
+    </script>
+</head>
+<body class="deck-container">
+
+<!-- Begin slides. Just make elements with a class of slide. -->
+
+<section class="slide">
+	<h1>Building Charts Using D3.js</h1>
+</section>
+
+<section class="slide" id="about-me">
+
+	<h2>About Me</h2>
+	<img src="assets/images/tony_head.jpg" alt="" height="250" style="float:right;"  />
+	<ul>
+		<li>12 Years Experience as a front- and back-end web developer.</li>
+		<li>Currently a developer at Vertex Pharmaceuticals in Boston, MA</li>
+		<!-- <li>Co-Manager of the Boston ColdFusion User Group</li> -->
+		<li>Former career: Research Scientist developing therapeutics for rare genetic diseases.</li>
+	</ul>
+	<h3>Contact Info</h3>
+	<ul>
+		<li>Email: tnyrgrc@gmail.com</li>
+		<li>Twitter: @objectivebias</li>
+	</ul>
+</section>
+
+<section class="slide" id="overview">
+	<h2>Overview</h2>
+	<ul>
+		<!-- <li class="slide" >
+			<h3>Data Visualization: What and Why?</h3>
+		</li> -->
+		<li class="slide" >
+			<h3>Building a Bar Chart</h3>
+      <ul class="slide" >
+        <li>
+          <h3>Scales &amp; Axes</h3>
+        </li>
+        <li>
+          <h3>Transitions &amp; Interactivity</h3>
+      </ul>
+    </li>
+    <li class="slide" >
+        <h3>Layout Example (Pie Chart)</h3>
+    </li>
+		<li class="slide" >
+			<h3>Resources</h3>
+		</li>
+		<li class="slide" >
+			<h3>Q &amp; A</h3>
+		</li>
+	</ul>
+</section>
+
+<section class="slide" id="svg-primer">
+    <h2>SVG Primer</h2>
+    <ul>
+        <li><u>S</u>calable <u>V</u>ector <u>G</u>raphics - a standards-based vector image format.</li>
+        <li>XML-based Markup (all tags must be closed)</li>
+        <li>Supported in all modern browsers (not in IE 8 and older or Android 2.3 and older)</li>
+        <li>Can be used to draw shapes, lines, paths, and even text.</li>
+        <li>Can be styled using CSS</li>
+    </ul>
+</section>
+
+<section class="slide" id="svg-example">
+    <h2>SVG Examples</h2>
+<textarea name="code" class="code" mode="htmlmixed" globals="d3" style="display:none;">
+<style>
+    .exampleLine { stroke: red; }
+    .exampleText { stroke: green; font: 25px sans-serif; }
+</style>
+
+<svg width="500" height="300">   // svg element provides a "canvas" for drawing
+    <rect x="25" y="25" width="150" height="50"></rect>
+    <circle cx="250" cy="25" r="22" fill="blue" stroke="gray" stroke-width="5"></circle>
+    <line x1="450" y1="0" x2="375" y2="200" class="exampleLine" />
+    <text x="150" y="150" class="exampleText">Oh yeah!</text>
+    <ellipse cx="80" cy="90" rx="100" ry="25" fill= "rgba( 150, 0, 150, 0.8)" />
+</svg>
+     // placement coordinates are relative to top left corner of svg area
+</textarea>
+<br><br>
+
+<div class="slide" align="center">
+    <h3>Output:</h3>
+
+<!-- <svg width="50" height="50">
+    <circle cx="25" cy="25" r="22" fill="blue" stroke="gray" stroke-width="5"></circle>
+</svg> -->
+
+<svg width="500" height="300">   // svg element provides a "canvas" for drawing
+    <defs>
+    <marker id="Triangle"
+      viewBox="0 0 10 10" refX="0" refY="5" 
+      markerUnits="strokeWidth"
+      markerWidth="4" markerHeight="3"
+      orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" />
+    </marker>
+    </defs>
+    <rect x="25" y="75" width="150" height="50"></rect>
+    <circle cx="250" cy="75" r="22" fill="blue" stroke="gray" stroke-width="5"></circle>
+    <line x1="450" y1="50" x2="375" y2="250" class="exampleLine" />
+    <text x="150" y="200" class="exampleText">Oh yeah!</text>
+    <ellipse cx="80" cy="140" rx="100" ry="25" fill= "rgba( 150, 0, 150, 0.8)" />
+    <line x1="6" y1="8" x2="70" y2="8" stroke="black" stroke-width="5" marker-end="url(#Triangle)" />
+    <text x="0" y="80" stroke="black" font-family="sans-serif">Y</text>
+    <line x1="8" y1="6" x2="8" y2="50" stroke="black" stroke-width="5" marker-end="url(#Triangle)" />
+    <text x="90" y="15" stroke="black" font-family="sans-serif">X</text>
+</svg>
+
+</div>
+
+</section>
+
+<section class="slide" id="chart-title">
+    <h2>Building A Chart</h2>
+    <img src="assets/images/funny_graphs.jpg" alt="">
+</section>
+
+<section class="slide" id="dimensions">
+    <h2>Define Chart Dimensions</h2>
+<textarea name="code" class="code" mode="javascript" style="display:none;">
+// define dimensions of svg
+var h = 400,
+    w = 800;
+
+// create svg element
+var chart = d3.select('body')
+              .append('svg') // parent svg element will contain the chart
+              .attr('width', w)
+              .attr('height', h);
+</textarea>
+</section>
+
+<section class="slide" id="chart-data">
+    <h2>Load Data From CSV</h2>
+<div>
+
+<textarea name="code" class="code" mode="javascript" runnable="true" globals="d3" style="display:none;">
+// load data from a CSV file
+d3.csv('data/homesales2010.csv', function(d) {
+        return {
+            key: d.state,
+            value: +d.value
+        };
+    },
+    function(dataset){
+        // code to generate chart goes here
+        console.log( dataset );
+    }
+);
+</textarea>
+</div>
+<br>
+<ul>
+    <li><code>d3.csv(<em>path[,accessor],callback)</em>)</code> -- creates javascript data from CSV file</li>
+    <li>Accessor function: optional function used to process/format data. Here it is used to coerce values to be numeric.</li>
+    <li>Callback function: called when data is ready -- here is where you create your chart.</li>
+    <li>D3 also has <code>d3.tsv()</code> and <code>d3.json()</code> methods.</li>
+</ul>
+</section>
+
+<section class="slide" id="bind-data" >
+    <h2>Generate SVG Bars</h2>
+<textarea name="code" class="code" mode="javascript" style="display:none;">
+// calculate with of each bar
+var barwidth = w / dataset.length;
+
+// create bars
+chart.selectAll('rect')  // returns empty selection
+     .data(dataset)      // parses & counts data
+     .enter()            // binds data to placeholders
+     .append('rect')     // creates a rect svg element for every datum
+     .attr('x',function(d,i){   // left-to-right position of left edge of each
+         return i * barwidth;   // bar
+      })
+     .attr('y',function(d){
+         return h - d.value;  // position of the top of each bar
+      })
+     .attr('width', barwidth)
+     .attr('height',function(d){
+         return d.value;
+      })
+     .attr('fill','red');
+</textarea>
+</section>
+
+<section class="slide" id="example1" align="center">
+    <h2>Our Graph So Far</h2>
+    <script>
+    (function() {
+        // define dimensions of svg
+        var h = 400,
+            w = 800;
+        
+        // create svg element
+        var chart = d3.select('#example1')
+                      .append('svg')
+                      .attr('width', w)
+                      .attr('height', h);
+
+        // load data from a CSV file
+        d3.csv('data/homesales2010.csv', function(d) {
+                return {
+                    key: d.state,
+                    value: +d.value
+                };
+            },
+            function(dataset){
+                // calculate with of each bar
+                var barwidth = w / dataset.length;
+                // create bars
+                chart.selectAll('rect')
+                   .data(dataset)
+                   .enter()
+                   .append('rect')
+                   .attr('x',function(d,i){
+                        return i * barwidth;
+                     })
+                    .attr('y',function(d){
+                        return h - d.value;
+                     })
+                    .attr('width', barwidth)
+                    .attr('height',function(d){
+                        return d.value;
+                     })
+                    .attr('class','data')
+                    .attr('fill','red');
+            }
+        );
+    })();
+    </script>
+
+</section>
+
+<section class="slide" id="spacing-labels" >
+    <h2>Add Spacing</h2>
+<textarea name="code" class="code" mode="javascript" style="display:none;">
+// add variable to set spacing
+var spacing = 1;
+
+// create bars
+chart.selectAll('rect')
+     .data(dataset)
+     .enter()
+     .append('rect')
+     .attr('x',function(d,i){
+          return i * (barwidth);
+      })
+     .attr('y',function(d){
+          return h - d.value;
+      })
+     .attr('width', barwidth - spacing) // subtract spacing from bar width
+     .attr('height',function(d){
+          return d.value;
+      })
+     .attr('fill','red');
+</textarea>
+</section>
+
+<section class="slide">
+    <h2>And Data Labels</h2>
+<textarea name="code" class="code" mode="javascript" style="display:none;">
+chart.selectAll('text')
+     .data(dataset)
+     .enter()
+     .append('text')
+     .text(function(d){
+          return d.value;
+      })
+     // multiple attributes may be passed in as an object
+     .attr({
+          'x': function(d,i){
+               return (i * barwidth) + (barwidth / 2); 
+          },                       // position text at the middle of each bar
+          'y': function(d){
+               return h - d.value; // base of text will be at the top of each bar
+          },
+          'font-family': 'sans-serif',
+          'font-size': '13px',
+          'font-weight': 'bold',
+          'fill': 'black',
+          'text-anchor': 'middle'
+     });
+</textarea>
+
+<ul>
+    <li>Multiple attr() can be set using a single object.</li>
+</ul>
+</section>
+
+<section class="slide" id="example2" align="center">
+    <h2>Getting There...</h2>
+    <script>
+    (function() {
+        // define dimensions of svg
+        var h = 400,
+            w = 800,
+            spacing = 1;
+        
+        // create svg element
+        var chart = d3.select('#example2')
+                      .append('svg')
+                      .attr('width', w)
+                      .attr('height', h);
+
+        // load data from a CSV file
+        d3.csv('data/homesales2010.csv', function(d) {
+                return {
+                    key: d.state,
+                    value: +d.value
+                };
+            },
+            function(dataset){
+                // calculate with of each bar
+                var barwidth = w / dataset.length;
+                // create bars
+                chart.selectAll('rect')
+                   .data(dataset)
+                   .enter()
+                   .append('rect')
+                   .attr('x',function(d,i){
+                        return i * barwidth;
+                     })
+                    .attr('y',function(d){
+                        return h - d.value;
+                     })
+                    .attr('width', barwidth - spacing)
+                    .attr('height',function(d){
+                        return d.value;
+                     })
+                    .attr('fill','red');
+
+                chart.selectAll('text')
+                   .data(dataset)
+                   .enter()
+                   .append('text')
+                   .text(function(d){
+                        return d.value;
+                   })
+                   .attr({
+                        'x': function(d,i){ return (i * barwidth) + (barwidth / 2) },
+                        'y': function(d){ return h - d.value },
+                        'font-family': 'sans-serif',
+                        'font-size': '13px',
+                        'font-weight': 'bold',
+                        'fill': 'black',
+                        'text-anchor': 'middle'
+                   });
+            }
+        );
+    })();
+    </script>
+
+    <div align="left">
+        <ul>
+            <li>BUT chart relies on a 'magic number' and is not flexible enough for real data.</li>
+        </ul>
+    
+    </div>
+
+</section>
+
+<section class="slide" id="scales-axes-title">
+    <h2>Scales and Axes</h2>
+    <img src="assets/images/scales-axes.png" alt="">
+</section>
+
+<section class="slide" id="scales">
+    <h2>Scales</h2>
+    <ul>
+        <li>"Scales are functions that map from an input domain to an output range." (M. Bostock)</li>
+            <ul>
+                <li>Input Domain: range of possible data values</li>
+                <li>Output Range: interval into which the input domain will be displayed</li>
+            </ul>
+        <li>Functions which are used to normalize data to the dimensions of the visualization.</li>
+        <li>
+            Types of scales:
+            <ul>
+                <li>Ordinal</li>
+                <li>Quantitative
+                    <ul>
+                        <li>Linear</li>
+                        <li>Logarithmic</li>
+                        <li>Square Root</li>
+                        <li>Exponential</li>
+                        <li>Quantized (Discreet values)</li>
+                        <li>...</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>
+
+<section class="slide" id="scale-example">
+    <h2>Linear Scale Example</h2>
+
+    <ul>
+        <li><code>myScale = d3.scale.linear().domain(<em>domain</em>).range(<em>range</em>)</code></li>
+        <li>Domain and Range are specified by arrays of [<em>min,max</em>] values.</li>
+        <li>Default scale Maps 1:1
+            <ul>
+                <li><code>d3.scale.linear()</code> is equivalent to <code>d3.scale.linear().domain([0,1]).range([0,1])</code></li>
+            </ul>
+        </li>
+    </ul>
+
+    <div>
+    <textarea name="code" class="code" mode="javascript" globals="d3" runnable="true" style="display:none;">
+var scale = d3.scale.linear();
+
+
+console.log( scale(20) );
+    </textarea>   
+    </div>
+    <div>
+    <textarea name="code" class="code" mode="javascript" globals="d3" runnable="true" style="display:none;">
+var scale = d3.scale.linear().domain([0,100]).range([0,10]);
+
+
+console.log( scale(20) );
+    </textarea>   
+    </div>
+</section>
+
+<section class="slide" id="yScale">
+    <h2>Y Value Scale for Our Chart</h2>
+<div>
+<h3>Domain</h3>
+ <textarea name="code" class="code" mode="javascript" globals="d3,dataset" runnable="true" style="display:none;">
+var maxValue = d3.max(dataset,function(d){ return d.value; });
+var yScale = d3.scale
+               .linear()
+               .domain( [0,maxValue] );
+
+console.log( maxValue );
+ </textarea> 
+</div>
+<p></p>
+
+<div>
+<h3>Range</h3>
+<script type="codemirror" data-selector="#yrangecode">
+    var maxValue = d3.max(dataset,function(d){ return d.value; });
+    var h = 400;
+</script>
+<textarea name="code" id="yrangecode" class="code" mode="javascript" globals="d3,dataset" runnable="true" style="display:none;">
+var yScale = d3.scale
+               .linear()
+               .domain( [0,maxValue] )
+               .range( [0, h] );
+
+console.log( yScale( 100 ) ); // scale datapoint of 100 to 0 to h
+ </textarea> 
+ </div>
+
+ <ul>
+    <li><code>d3.max(dataset[,accessorFunction])</code> -- returns the maximum value of the dataset</li>
+    <li><code>d3.min(dataset[,accessorFunction])</code> -- returns the minimum value of the dataset</li>
+    <li><code>d3.extent(dataset[,accessorFunction])</code> -- returns an array containing <code>[(min),(max)]</code> of the dataset</li>
+</ul> 
+</section>
+
+<section class="slide" id="xScale" >
+    <h2>Use Ordinal Scale for X-Axis</h2>
+<ul>
+    <li>Domain: pass in a list of discreet 'labels' or categories.</li>
+    <li><code>array.map()</code> -- native js function which returns an array made up of the results of calling the passed in function on every element of the array.</li>
+    <li>RangeBands: Divides the passed in interval by the length of the domain (calculates %spacing if passed in)</li>
+    <li>RangeRoundBands rounds calculation to the nearest whole pixel.</li>
+</ul>
+<script type="codemirror" data-selector="#xscalecode">
+        var w = 800;
+</script>
+<div>
+<textarea name="code" id="xscalecode" class="code" mode="javascript" globals="d3,dataset" runnable="true" style="display:none;">
+var barLabels = dataset.map(function(datum){
+            return datum.key;
+        });
+
+var xScale = d3.scale.ordinal()
+               .domain(barLabels)
+               .rangeRoundBands( [0, w], 0.1 );
+                // divides bands equally among total width, with 10% spacing.
+
+console.log( xScale.domain() );    // array of bar labels
+//console.log( xScale.rangeBand() ); // width of each bar
+</textarea>
+</div>
+
+</section>
+
+
+<section class="slide" id="xScale-code" >
+    <h2>Use Scale Functions to Draw Bars &amp; Labels</h2>
+<textarea name="code" class="code" mode="javascript" style="display:none;">
+    // create bars
+    chart.selectAll('rect')
+         .data(dataset)
+         .enter()
+         .append('rect')
+         .attr({
+             'x': function(d) {
+                 return xScale(d.key); 
+                 // instead of return i * barwidth
+             },
+             'y': function(d) {
+                 return h - yScale(d.value);
+                 // instead of return h - d.value
+             },
+             'width': xScale.rangeBand(), // gives bar width with space calculation built in
+                // instead of barwidth - spacing
+             'height': function(d) {
+                 return yScale(d.value);
+                // instead of return d.value
+             },
+             'fill': 'red'
+         });
+
+    chart.selectAll('text')
+         .data(dataset)
+         .enter()
+         .append('text')
+         .text(function(d){
+             return d.value;
+         })
+         .attr({
+             'x': function(d){return xScale(d.key) + xScale.rangeBand() / 2},
+             'y': function(d){ return h - yScale(d.value) }
+                ...
+</textarea>
+</section>
+
+<section class="slide" id="example3">
+    <h2>Chart With X and Y Axis Scaled</h2>
+    <div id="example3chart" align="center"></div>
+    <ul>
+        <li>Chart can now handle data no matter how large the values.</li>
+    </ul>
+    <script>
+    (function() {
+        // define dimensions of svg
+        var h = 400;
+        var w = 800;
+
+        // create svg element
+        var chart = d3.select('#example3chart')
+                      .append('svg')
+                      .attr('width', w)
+                      .attr('height', h);
+
+        // load data from a CSV file
+        d3.csv('data/homesales2010.csv', function(d) {
+                return {
+                    key: d.state,
+                    value: +d.value
+                };
+            },
+            function(dataset){
+
+                var barLabels = dataset.map(function(datum){
+                    return datum.key;
+                });
+
+                var maxValue = d3.max(dataset,function(d){ return d.value; });
+
+                // set up scales
+                var yScale = d3.scale
+                               .linear()
+                               .domain( [0,maxValue] )
+                               .range( [0, h] );
+
+                var xScale = d3.scale.ordinal()
+                               .domain(barLabels)
+                               .rangeRoundBands( [0, w], 0.1 );
+                                // divides bands equally among total width, with 10% spacing.
+
+                // create bars
+                chart.selectAll('rect')
+                   .data(dataset)
+                   .enter()
+                   .append('rect')
+                   .attr({
+                        'x': function(d,i) {
+                            return xScale(d.key);
+                        },
+                        'y': function(d) {
+                            return h - yScale(d.value);
+                        },
+                        'width': xScale.rangeBand(),
+                        'height': function(d) {
+                            return yScale(d.value);
+                        },
+                        'fill': 'red'
+                    });
+
+                chart.selectAll('text')
+                   .data(dataset)
+                   .enter()
+                   .append('text')
+                   .text(function(d){
+                        return d.value;
+                   })
+                   .attr({
+                        'x': function(d,i){ return xScale(d.key) + xScale.rangeBand() / 2 },
+                        'y': function(d){ return h - yScale(d.value) },
+                        'font-family': 'sans-serif',
+                        'font-size': '13px',
+                        'font-weight': 'bold',
+                        'fill': 'black',
+                        'text-anchor': 'middle'
+                   });
+            }
+        );
+    })();
+    </script>
+
+</section>
+
+<section class="slide" id="axisPadding">
+    <h2>Add padding around chart to accommodate axes</h2>
+
+<textarea name="code" class="code" mode="javascript" style="display:none;">
+var chartPadding = 50;
+var chartBottom = h - chartPadding; // 350
+var chartRight = w - chartPadding; // 750
+
+...
+// adjust scale values to use padding
+var yScale = d3.scale
+               .linear()
+               .domain( [0,maxValue] )
+               .range( [chartPadding, chartBottom] );
+               // instead of .range([0,h])
+
+var xScale = d3.scale.ordinal()
+                     .domain( barLabels )
+                     .rangeRoundBands([chartPadding,chartRight], 0.1);
+                     // instead of .rangeRoundBands([0,w], 0.1)
+...
+
+chart.selectAll('rect')
+     .data(dataset)
+     .enter()
+     ...
+     .attr('height', function(d) {
+          return yScale(d.value) - chartPadding;
+          // instead of yScale(d.value);
+      })
+
+</textarea>
+
+</section>
+
+<section class="slide" id="yAxis">
+    <h2>Y Axis</h2>
+
+<textarea name="code" class="code" mode="htmlmixed" style="display:none;">
+<style>
+    /* style the axis elements */
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: black;
+        shape-rendering: crispEdges;
+    }
+
+    .axis text {
+        font-family: sans-serif;
+        font-size: 11px;
+    }
+</style>
+
+<script>
+...
+// declare & configure the y axis function
+var yAxis = d3.svg.axis()
+                  .scale(yScale)
+                  .orient('left');
+...
+// after chart code, set up group element for axis
+// use transformation to adjust position of axis
+y_axis = svg.append('g')
+            .attr('class','axis')
+            .attr('transform','translate(' + chartPadding + ',0)');
+
+// generate y Axis within group using yAxis function
+yAxis(y_axis);
+
+</script>
+</textarea>
+
+</section>
+
+<section class="slide" id="xAxis">
+    <h2>X Axis</h2>
+
+<textarea name="code" class="code" mode="javascript" style="display:none;">
+
+...
+// declare & configure the x axis
+var xAxis = d3.svg.axis()
+                  .scale(xScale)
+                  .orient('bottom')
+                  .tickSize(0);
+...
+// after chart code, generate x axis
+
+chart.append('g')
+     .attr('class', 'axis xAxis')
+     .attr('transform','translate(0,' + chartBottom + ')')  // push to bottom
+     .call(xAxis); // passes itself (g element) into xAxis function
+     // rotate tick labels
+     .selectAll('text')
+        .style('text-anchor','end')
+        .attr('transform','rotate(-65');
+...
+
+</textarea>
+
+</section>
+
+<section class="slide" id="example4" align="center">
+    <h2>Chart With Axes</h2>
+    <style>
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+
+        .axis text {
+            font-family: sans-serif;
+            font-size: 11px;
+        }
+    </style>
+    <h3>Home Sales (1000's) in 2010 By State</h3>
+    <script>
+   (function() {
+        // define dimensions of svg
+        var h = 400;
+        var w = 800;
+        var chartPadding = 50;
+        var chartBottom = h - chartPadding;
+        var chartRight = w - chartPadding;
+
+        // create svg element
+        var chart = d3.select('#example4')
+                      .append('svg')
+                      .attr('width', w)
+                      .attr('height', h);
+
+        // load data from a CSV file
+        d3.csv('data/homesales2010.csv', function(d) {
+                return {
+                    key: d.state,
+                    value: +d.value
+                };
+            },
+            function(dataset){
+
+                var barLabels = dataset.map(function(datum){
+                    return datum.key;
+                });
+
+                var maxValue = d3.max(dataset,function(d){ return d.value; });
+
+                // set up scales
+                var yScale = d3.scale
+                               .linear()
+                               .domain( [0,maxValue] )
+                               .range( [chartPadding,chartBottom] );
+
+                var xScale = d3.scale.ordinal()
+                               .domain(barLabels)
+                               .rangeRoundBands([chartPadding,chartRight], 0.1);
+                                // divides bands equally among total width, with 10% spacing.
+
+                var yAxis = d3.svg.axis()
+                                  .scale(yScale)
+                                  .orient('left');
+
+                var xAxis = d3.svg.axis()
+                                  .scale(xScale)
+                                  .orient('bottom')
+                                  .tickSize(0);
+
+                // create bars
+                chart.selectAll('rect')
+                   .data(dataset)
+                   .enter()
+                   .append('rect')
+                   .attr({
+                        'x': function(d,i) {
+                            return xScale(d.key);
+                        },
+                        'y': function(d) {
+                            return h - yScale(d.value);
+                        },
+                        'width': xScale.rangeBand(),
+                        'height': function(d) {
+                            return yScale(d.value) - chartPadding;
+                        },
+                        'fill': 'red'
+                    });
+
+                var y_axis = chart.append('g')
+                                  .attr('class','axis')
+                                  .attr('transform','translate(' + chartPadding + ',0)');
+
+                yAxis(y_axis);
+
+                x_axis = chart.append('g')
+                     .attr('class', 'axis xAxis')
+                     .attr('transform','translate(0,' + chartBottom + ')')  // push to bottom
+                     .call(xAxis) // passes itself (g element) into xAxis function
+                     // rotate tick labels
+                     .selectAll('text')
+                        .style('text-anchor','end')
+                        .attr('transform','rotate(-65)');
+            }
+        );
+    })();
+    </script>
+    <div align="left">
+        <ul class="slide">
+            <li>Axis is inverted because recall that the xy origin is at the top left of the SVG element.</li>
+            <li>Bar positions were calculated by inverting their position relative to the height of the chart
+         
+                    <li><code>attr( 'y',h - yScale(d.value) )</code></li>
+         
+            </li>
+            <li>To correct the values of the axis, we can invert the yScale range.</li>
+        </ul>
+    </div>
+
+</section>
+
+<section class="slide" id="cleanUpYaxis">
+    <h2>Invert and Clean up Y-Axis</h2>
+
+<textarea name="code" class="code" mode="javascript" style="display:none;">
+...
+// invert the scale range
+var yScale = d3.scale
+               .linear()
+               .domain( [0,maxValue] )
+               .range( [chartBottom,chartPadding] )
+               // instead of .range([chartPadding,chartBottom])
+               .nice();
+               // adjusts scale to nice round values
+
+chart.selectAll('rect')
+     .data(dataset)
+     .enter()
+     ...
+     .attr('y', function(d) {
+          return yScale(d.value);
+          // instead of h - yScale(d.value)
+      })
+     .attr('height',function(d) {
+          return chartBottom - yScale(d.value);
+          // instead of yScale(d.value) - chartPadding
+      })
+...
+
+</textarea>
+
+</section>
+
+<section class="slide" id="example5" align="center">
+    <h2>Cleaned Up Y Axis</h2>
+     <style>
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+
+        .axis text {
+            font-family: sans-serif;
+            font-size: 11px;
+        }
+    </style>
+    <h3>Home Sales (1000's) in 2010 By State</h3>
+    <script>
+   (function() {
+        // define dimensions of svg
+        var h = 400;
+        var w = 800;
+        var chartPadding = 50;
+        var chartBottom = h - chartPadding;
+        var chartRight = w - chartPadding;
+
+        // create svg element
+        var chart = d3.select('#example5')
+                      .append('svg')
+                      .attr('width', w)
+                      .attr('height', h);
+
+        // load data from a CSV file
+        d3.csv('data/homesales2010.csv', function(d) {
+                return {
+                    key: d.state,
+                    value: +d.value
+                };
+            },
+            function(dataset){
+
+                var barLabels = dataset.map(function(datum){
+                    return datum.key;
+                });
+
+                var maxValue = d3.max(dataset,function(d){ return d.value; });
+
+                // set up scales
+                var yScale = d3.scale
+                               .linear()
+                               .domain( [0,maxValue] )
+                               .range( [chartBottom,chartPadding] )
+                               .nice();
+
+                var xScale = d3.scale.ordinal()
+                               .domain(barLabels)
+                               .rangeRoundBands([chartPadding,chartRight], 0.1);
+                                // divides bands equally among total width, with 10% spacing.
+
+                var yAxis = d3.svg.axis()
+                                  .scale(yScale)
+                                  .orient('left')
+                                  .ticks(5);
+
+                var xAxis = d3.svg.axis()
+                                  .scale(xScale)
+                                  .orient('bottom')
+                                  .tickSize(0);
+
+                // create bars
+                chart.selectAll('rect')
+                   .data(dataset)
+                   .enter()
+                   .append('rect')
+                   .attr({
+                        'x': function(d,i) {
+                            return xScale(d.key);
+                        },
+                        'y': function(d) {
+                            return yScale(d.value);
+                        },
+                        'width': xScale.rangeBand(),
+                        'height': function(d) {
+                            return chartBottom - yScale(d.value);
+                        },
+                        'fill': 'red'
+                    });
+
+                var y_axis = chart.append('g')
+                                  .attr('class','axis')
+                                  .attr('transform','translate(' + chartPadding + ',0)');
+
+                yAxis(y_axis);
+
+                x_axis = chart.append('g')
+                     .attr('class', 'axis xAxis')
+                     .attr('transform','translate(0,' + chartBottom + ')')  // push to bottom
+                     .call(xAxis) // passes itself (g element) into xAxis function
+                     // rotate tick labels
+                     .selectAll('text')
+                        .style('text-anchor','end')
+                        .attr('transform','rotate(-65)');
+            }
+        );
+    })();
+    </script>
+
+</section>
+
+<section class="slide" id="transitions-title">
+    <h2>Transitions &amp; Interactivity</h2>
+    <img src="assets/images/devolve.jpg" alt="">
+</section>
+
+<section class="slide">
+    <h2>Adding Behaviors to Chart Elements</h2>
+<textarea name="code" class="code" mode="javascript" style="display:none;">
+// create bars
+chart.selectAll('rect')
+     .data(dataset)
+     .enter()
+     .append('rect')
+     ...// attr() calls
+
+     // attach event listener to each bar for mouseover
+     .on('mouseover',function(d){
+          d3.select(this)
+            .attr('fill','yellow');
+            // showValue(d);
+     })
+     .on('mouseout',function(d){
+        d3.select(this)
+          .attr('fill','red');
+          // hideValue();
+     });
+</textarea>
+<br>
+<ul>
+    <li>The <code>showValue(d)</code> and <code>hideValue(d)</code> method calls are a placeholders for logic to show the bar value on hover.</li>
+</ul>
+</section>
+
+<section class="slide" id="example6" align="center">
+    <h2>Mouseover Color</h2>
+    <style>
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+
+        .axis text {
+            font-family: sans-serif;
+            font-size: 11px;
+        }
+    </style>
+    <h3>Home Sales (1000's) in 2010 By State</h3>
+    <script>
+    (function() {
+        // define dimensions of svg
+        var h = 400;
+        var w = 800;
+        var chartPadding = 50;
+        var chartBottom = h - chartPadding;
+        var chartRight = w - chartPadding;
+
+        // create svg element
+        var chart = d3.select('#example6')
+                      .append('svg')
+                      .attr('width', w)
+                      .attr('height', h);
+
+        // load data from a CSV file
+        d3.csv('data/homesales2010.csv', function(d) {
+                return {
+                    key: d.state,
+                    value: +d.value
+                };
+            },
+            function(dataset){
+
+                var barLabels = dataset.map(function(datum){
+                    return datum.key;
+                });
+
+                var maxValue = d3.max(dataset,function(d){ return d.value; });
+
+                // set up scales
+                var yScale = d3.scale
+                               .linear()
+                               .domain( [0,maxValue] )
+                               .range( [chartBottom,chartPadding] )
+                               .nice();
+
+                var xScale = d3.scale.ordinal()
+                               .domain(barLabels)
+                               .rangeRoundBands([chartPadding,chartRight], 0.1);
+                                // divides bands equally among total width, with 10% spacing.
+
+                var yAxis = d3.svg.axis()
+                                  .scale(yScale)
+                                  .orient('left')
+                                  .ticks(5);
+
+                var xAxis = d3.svg.axis()
+                                  .scale(xScale)
+                                  .orient('bottom')
+                                  .tickSize(0);
+
+                // create bars
+                chart.selectAll('rect')
+                   .data(dataset)
+                   .enter()
+                   .append('rect')
+                   .attr({
+                        'x': function(d,i) {
+                            return xScale(d.key);
+                        },
+                        'y': function(d) {
+                            return yScale(d.value);
+                        },
+                        'width': xScale.rangeBand(),
+                        'height': function(d) {
+                            return chartBottom - yScale(d.value);
+                        },
+                        'fill': 'red'
+                    })
+                   .on('mouseover',function(d){
+                        d3.select(this)
+                          .attr('fill','yellow');
+                            // showValue(d);
+                   })
+                   .on('mouseout',function(d){
+                        d3.select(this)
+                          .attr('fill','red');
+                          // hideValue();
+                    });
+
+                var y_axis = chart.append('g')
+                                  .attr('class','axis')
+                                  .attr('transform','translate(' + chartPadding + ',0)');
+
+                yAxis(y_axis);
+
+                x_axis = chart.append('g')
+                     .attr('class', 'axis xAxis')
+                     .attr('transform','translate(0,' + chartBottom + ')')  // push to bottom
+                     .call(xAxis) // passes itself (g element) into xAxis function
+                     // rotate tick labels
+                     .selectAll('text')
+                        .style('text-anchor','end')
+                        .attr('transform','rotate(-65)');
+            }
+        );
+    })();
+    </script>
+
+</section>
+
+<section class="slide">
+    <h2>Color Transition and Showing Values on MouseOver</h2>
+<textarea name="code" class="code" mode="javascript" style="display:none;">
+// attach event listener to each bar for mouseover
+.on('mouseover',function(d){
+    d3.select(this).attr('fill','yellow');
+    showValue(d);
+})
+.on('mouseout',function(d){
+    d3.select(this)
+      .transition()  // adds a "smoothing" animation to the transition
+      .duration(500) // set the duration of the transition in ms (default: 250)
+      .attr('fill','red');
+      hideValue();
+});
+...
+var showValue = function(d) {
+    chart.append('text')
+         .text(d.value)
+         .attr({
+             'x': xScale(d.key) + xScale.rangeBand() / 2,
+             'y': yScale(d.value) + 15,
+             'class': 'value'
+         });
+}
+
+var hideValue = function() {
+    chart.select('text.value').remove();
+}
+</textarea>
+<br>
+<ul>
+    <li>Call <code>transition()</code> and (optionally) <code>duration()</code> BEFORE the transition you want to make to animate it.</li>
+</ul>
+
+</section>
+
+<section class="slide" id="example7" align="center">
+    <h2>Mouseover Values with Transition</h2>
+    <style>
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+
+        .axis text {
+            font-family: sans-serif;
+            font-size: 11px;
+        }
+
+        .value {
+            font-family: sans-serif;
+            font-size: 13px;
+            font-weight: bold;
+            fill: black;
+            text-anchor: middle;
+        }
+    </style>
+    <h3>Home Sales (1000's) in 2010 By State</h3>
+    <script>
+    (function() {
+        // define dimensions of svg
+        var h = 400;
+        var w = 800;
+        var chartPadding = 50;
+        var chartBottom = h - chartPadding;
+        var chartRight = w - chartPadding;
+
+        // create svg element
+        var chart = d3.select('#example7')
+                      .append('svg')
+                      .attr('width', w)
+                      .attr('height', h);
+
+        // load data from a CSV file
+        d3.csv('data/homesales2010.csv', function(d) {
+                return {
+                    key: d.state,
+                    value: +d.value
+                };
+            },
+            function(dataset){
+
+                var barLabels = dataset.map(function(datum){
+                    return datum.key;
+                });
+
+                var maxValue = d3.max(dataset,function(d){ return d.value; });
+
+                // set up scales
+                var yScale = d3.scale
+                               .linear()
+                               .domain( [0,maxValue] )
+                               .range( [chartBottom,chartPadding] )
+                               .nice();
+
+                var xScale = d3.scale.ordinal()
+                               .domain(barLabels)
+                               .rangeRoundBands([chartPadding,chartRight], 0.1);
+                                // divides bands equally among total width, with 10% spacing.
+
+                var yAxis = d3.svg.axis()
+                                  .scale(yScale)
+                                  .orient('left')
+                                  .ticks(5);
+
+                var xAxis = d3.svg.axis()
+                                  .scale(xScale)
+                                  .orient('bottom')
+                                  .tickSize(0);
+
+                // create bars
+                chart.selectAll('rect')
+                   .data(dataset)
+                   .enter()
+                   .append('rect')
+                   .attr({
+                        'x': function(d,i) {
+                            return xScale(d.key);
+                        },
+                        'y': function(d) {
+                            return yScale(d.value);
+                        },
+                        'width': xScale.rangeBand(),
+                        'height': function(d) {
+                            return chartBottom - yScale(d.value);
+                        },
+                        'fill': 'red'
+                    })
+                   .on('mouseover',function(d){
+                        d3.select(this)
+                          .attr('fill','yellow');
+                          showValue(d);
+                   })
+                   .on('mouseout',function(d){
+                        d3.select(this)
+                          .transition()  // adds a "smoothing" animation to the transition
+                          .duration(500) // set the duration of the transition in ms (default = 250)
+                          .attr('fill','red');
+                          hideValue();
+                    });
+
+                var y_axis = chart.append('g')
+                                  .attr('class','axis')
+                                  .attr('transform','translate(' + chartPadding + ',0)');
+
+                yAxis(y_axis);
+
+                x_axis = chart.append('g')
+                     .attr('class', 'axis')
+                     .attr('transform','translate(0,' + chartBottom + ')')  // push to bottom
+                     .call(xAxis) // passes itself (g element) into xAxis function
+                     // rotate tick labels
+                     .selectAll('text')
+                        .style('text-anchor','end')
+                        .attr('transform','rotate(-65)');
+
+                var showValue = function(d) {
+                    chart.append('text')
+                         .text(d.value)
+                         .attr({
+                             'x': xScale(d.key) + xScale.rangeBand() / 2,
+                             'y': yScale(d.value) + 15,
+                             'class': 'value'
+                         });
+                }
+
+                var hideValue = function() {
+                    chart.select('text.value').remove();
+                }
+            }
+        );
+    })();
+    </script>
+
+</section>
+
+<section class="slide">
+    <h2>Sorting Bars</h2>
+<div>
+<textarea name="code" class="code" mode="htmlmixed" style="display:none;">
+<button id="sortButton">Sort Data</button>
+
+<script>
+    var sortDir = 'asc'; // set a flag for sort direction
+    d3.select('button#sortButton') // add listener to button to activate sorting
+      .on('click',function(){
+            sortChart();
+      });
+
+      //...
+    var sortChart = function() {
+        var newDomain = [];  // declare array to hold re-ordered ordinal domain for xScale
+        chart.selectAll('rect')
+           .sort(function(a,b) {
+                if( sortDir == 'asc' ) {
+                    return d3.ascending(a.value,b.value);       
+                } else {
+                    return d3.descending(a.value,b.value);
+                }
+           })
+           .transition()
+           .duration(1000)
+           .attr('x',function(d,i){
+                return xScale(i);  // re-position bars based on sorted positions
+           });
+           sortDir = sortDir == 'asc' ? 'desc' : 'asc'; // flip the flag
+    }
+</script>
+</textarea>
+</div>
+
+<ul>
+    <li><code>selection.sort(<em>comparatorFunction(a,b)</em>)</code></li>
+    <li><code>d3.ascending(<em>a,b</em>)</code>: returns -1 if a &lt; b, 1 if a &gt; b, 0 if equal</li>
+    <li><code>d3.descending(<em>a,b</em>)</code>: returns -1 if a &gt;; b, 1 if a &lt; b, 0 if equal</li>
+</ul>
+
+</section>
+
+<section class="slide" id="example8" align="center">
+    <h2>Sorting Data</h2>
+    <style>
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+
+        .axis text {
+            font-family: sans-serif;
+            font-size: 11px;
+        }
+
+        .value {
+            font-family: sans-serif;
+            font-size: 13px;
+            font-weight: bold;
+            fill: black;
+            text-anchor: middle;
+        }
+    </style>
+    <h3>Home Sales (1000's) in 2010 By State</h3>
+    <button id="sortButton1">Sort Data</button>
+    <script>
+    (function() {
+        // define dimensions of svg
+        var h = 400;
+        var w = 800;
+        var chartPadding = 50;
+        var chartBottom = h - chartPadding;
+        var chartRight = w - chartPadding;
+
+        // create svg element
+        var chart = d3.select('#example8')
+                      .append('svg')
+                      .attr('width', w)
+                      .attr('height', h);
+
+        // load data from a CSV file
+        d3.csv('data/homesales2010.csv', function(d) {
+                return {
+                    key: d.state,
+                    value: +d.value
+                };
+            },
+            function(dataset){
+
+                var barLabels = dataset.map(function(datum){
+                    return datum.key;
+                });
+
+                var maxValue = d3.max(dataset,function(d){ return d.value; });
+
+                var sortDir = 'asc'; 
+
+                // set up scales
+                var yScale = d3.scale
+                               .linear()
+                               .domain( [0,maxValue] )
+                               .range( [chartBottom,chartPadding] )
+                               .nice();
+
+                var xScale = d3.scale.ordinal()
+                               .domain(barLabels)
+                               .rangeRoundBands([chartPadding,chartRight], 0.1);
+                                // divides bands equally among total width, with 10% spacing.
+
+                var yAxis = d3.svg.axis()
+                                  .scale(yScale)
+                                  .orient('left')
+                                  .ticks(5);
+
+                var xAxis = d3.svg.axis()
+                                  .scale(xScale)
+                                  .orient('bottom')
+                                  .tickSize(0);
+
+                d3.select('button#sortButton1') // add listener to button to activate sorting
+                  .on('click',function(){
+                        sortChart();
+                  });
+
+                // create bars
+                chart.selectAll('rect')
+                   .data(dataset)
+                   .enter()
+                   .append('rect')
+                   .attr({
+                        'x': function(d,i) {
+                            return xScale(d.key);
+                        },
+                        'y': function(d) {
+                            return yScale(d.value);
+                        },
+                        'width': xScale.rangeBand(),
+                        'height': function(d) {
+                            return chartBottom - yScale(d.value);
+                        },
+                        'fill': 'red'
+                    })
+                   .on('mouseover',function(d){
+                        d3.select(this)
+                          .attr('fill','yellow');
+                          showValue(d);
+                   })
+                   .on('mouseout',function(d){
+                        d3.select(this)
+                          .transition()  // adds a "smoothing" animation to the transition
+                          .duration(500) // set the duration of the transition in ms (default = 250)
+                          .attr('fill','red');
+                          hideValue();
+                    });
+
+                var y_axis = chart.append('g')
+                                  .attr('class','axis')
+                                  .attr('transform','translate(' + chartPadding + ',0)');
+
+                yAxis(y_axis);
+
+                x_axis = chart.append('g')
+                     .attr('class', 'axis')
+                     .attr('transform','translate(0,' + chartBottom + ')')  // push to bottom
+                     .call(xAxis) // passes itself (g element) into xAxis function
+                     // rotate tick labels
+                     .selectAll('text')
+                        .style('text-anchor','end')
+                        .attr('transform','rotate(-65)');
+
+                var showValue = function(d) {
+                    chart.append('text')
+                         .text(d.value)
+                         .attr({
+                             'x': xScale(d.key) + xScale.rangeBand() / 2,
+                             'y': yScale(d.value) + 15,
+                             'class': 'value'
+                         });
+                }
+
+                var hideValue = function() {
+                    chart.select('text.value').remove();
+                }
+
+                var sortChart = function() {
+                    var newDomain = [];  // declare array to hold re-ordered ordinal domain for xScale
+                    chart.selectAll('rect')
+                         .sort(function(a,b) {
+                              if( sortDir == 'asc' ) {
+                                  return d3.ascending(a.value,b.value);       
+                              } else {
+                                  return d3.descending(a.value,b.value);
+                              }
+                         })
+                         .transition()
+                         .duration(1000)
+                         .attr('x',function(d,i){
+                              return xScale(i);  // re-position bars based on sorted positions
+                         });
+                   sortDir = sortDir == 'asc' ? 'desc' : 'asc'; // flip the flag
+                }
+            }
+        );
+    })();
+    </script>
+
+</section>
+
+<section class="slide">
+    <h2>Adding Labels to the Transition and Adding Delay</h2>
+<textarea name="code" class="code" mode="javascript" style="display:none;">
+var sortChart = function() {
+    chart.selectAll('rect')
+         .sort(...)
+         .transition()
+         .delay(function(d,i){   // add a delay() call before duration() call
+             return i * 50;
+             //return (i/dataset.length) * 1000;
+         })
+         ...
+
+    chart.selectAll('rect')
+         .each(function(d){
+            newDomain.push( d.key );
+         });
+    // update domain of x axis
+    xScale.domain( newDomain );
+
+    chart.select('.axis.xAxis')
+       .transition()
+       .duration(1000)
+       .call(xAxis)
+       .selectAll('text')
+       .style('text-anchor','end');
+}
+</textarea>
+<br>
+<ul>
+    <li>Updating the domain of the xScale and passing the xAxis group element to the <code>xAxis()</code> function again will transition the axis.</li>
+    <li>The <code>delay()</code> call will delay the transition of each bar to create a staggered animation.</li>
+</ul>
+</section>
+
+<section class="slide" id="example9" align="center">
+    <h2>Sorting Data &amp; Labels with Delay</h2>
+    <style>
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+
+        .axis text {
+            font-family: sans-serif;
+            font-size: 11px;
+        }
+
+        .value {
+            font-family: sans-serif;
+            font-size: 13px;
+            font-weight: bold;
+            fill: black;
+            text-anchor: middle;
+        }
+    </style>
+    <h3>Home Sales (1000's) in 2010 By State</h3>
+    <button id="sortButton2">Sort Data</button>
+     <script>
+    (function() {
+        // define dimensions of svg
+        var h = 400;
+        var w = 800;
+        var chartPadding = 50;
+        var chartBottom = h - chartPadding;
+        var chartRight = w - chartPadding;
+
+        // create svg element
+        var chart = d3.select('#example9')
+                      .append('svg')
+                      .attr('width', w)
+                      .attr('height', h);
+
+        // load data from a CSV file
+        d3.csv('data/homesales2010.csv', function(d) {
+                return {
+                    key: d.state,
+                    value: +d.value
+                };
+            },
+            function(dataset){
+
+                var barLabels = dataset.map(function(datum){
+                    return datum.key;
+                });
+
+                var maxValue = d3.max(dataset,function(d){ return d.value; });
+
+                var sortDir = 'asc'; 
+
+                // set up scales
+                var yScale = d3.scale
+                               .linear()
+                               .domain( [0,maxValue] )
+                               .range( [chartBottom,chartPadding] )
+                               .nice();
+
+                var xScale = d3.scale.ordinal()
+                               .domain(barLabels)
+                               .rangeRoundBands([chartPadding,chartRight], 0.1);
+                                // divides bands equally among total width, with 10% spacing.
+
+                var yAxis = d3.svg.axis()
+                                  .scale(yScale)
+                                  .orient('left')
+                                  .ticks(5);
+
+                var xAxis = d3.svg.axis()
+                                  .scale(xScale)
+                                  .orient('bottom')
+                                  .tickSize(0);
+
+                d3.select('button#sortButton2') // add listener to button to activate sorting
+                  .on('click',function(){
+                        sortChart();
+                  });
+
+                // create bars
+                chart.selectAll('rect')
+                   .data(dataset)
+                   .enter()
+                   .append('rect')
+                   .attr({
+                        'x': function(d,i) {
+                            return xScale(d.key);
+                        },
+                        'y': function(d) {
+                            return yScale(d.value);
+                        },
+                        'width': xScale.rangeBand(),
+                        'height': function(d) {
+                            return chartBottom - yScale(d.value);
+                        },
+                        'fill': 'red'
+                    })
+                   .on('mouseover',function(d){
+                        d3.select(this)
+                          .attr('fill','yellow');
+                          showValue(d);
+                   })
+                   .on('mouseout',function(d){
+                        d3.select(this)
+                          .transition()  // adds a "smoothing" animation to the transition
+                          .duration(500) // set the duration of the transition in ms (default = 250)
+                          .attr('fill','red');
+                          hideValue();
+                    });
+
+                var y_axis = chart.append('g')
+                                  .attr('class','axis')
+                                  .attr('transform','translate(' + chartPadding + ',0)');
+
+                yAxis(y_axis);
+
+                x_axis = chart.append('g')
+                     .attr('class', 'axis xAxis')
+                     .attr('transform','translate(0,' + chartBottom + ')')  // push to bottom
+                     .call(xAxis) // passes itself (g element) into xAxis function
+                     // rotate tick labels
+                     .selectAll('text')
+                        .style('text-anchor','end')
+                        .attr('transform','rotate(-65)');
+
+                var showValue = function(d) {
+                    chart.append('text')
+                         .text(d.value)
+                         .attr({
+                             'x': xScale(d.key) + xScale.rangeBand() / 2,
+                             'y': yScale(d.value) + 15,
+                             'class': 'value'
+                         });
+                }
+
+                var hideValue = function() {
+                    chart.select('text.value').remove();
+                }
+
+                var sortChart = function() {
+                    var newDomain = [];  // declare array to hold re-ordered ordinal domain for xScale
+                    chart.selectAll('rect')
+                         .sort(function(a,b) {
+                              if( sortDir == 'asc' ) {
+                                  return d3.ascending(a.value,b.value);       
+                              } else {
+                                  return d3.descending(a.value,b.value);
+                              }
+                         })
+                         .transition()
+                         .delay(function(d,i){   // add a delay() call before duration() call
+                             return i * 50;
+                             //return (i/dataset.length) * 1000;
+                         })
+                         .duration(1000)
+                         .attr('x',function(d,i){
+                              return xScale(i);  // re-position bars based on sorted positions
+                         });
+
+                    chart.selectAll('rect')
+                         .each(function(d){
+                            newDomain.push( d.key );
+                         });
+
+                    xScale.domain( newDomain );
+
+                    chart.select('.axis.xAxis')
+                       .transition()
+                       .duration(1000)
+                       .call(xAxis)
+                       .selectAll('text')
+                       .style('text-anchor','end');
+
+                    sortDir = sortDir == 'asc' ? 'desc' : 'asc'; // flip the flag
+                }
+            }
+        );
+    })();
+    </script>
+
+</section>
+
+<section class="slide">
+    <h2>Transition the Bar Color</h2>
+<textarea name="code" class="code" mode="javascript" style="display:none;">
+var sortChart = function() {
+
+chart.selectAll('rect')
+   .sort(function(a,b) {
+        if( sortDir ) {
+            return d3.ascending(a.value,b.value);       
+        } else {
+            return d3.descending(a.value,b.value);
+        }
+   })
+   .transition()
+   .duration(1000)
+   .delay(function(d,i){
+        return i * 50;
+   })
+   .attr('x',function(d,i){
+        return xScale(i);
+   })
+   .attr('fill',function(d){
+        return 'rgb(0,0,' + (d.value/maxValue * 255) + ')'; //  b of 0 - 255
+   });
+
+   ...
+}
+
+</textarea>
+</section>
+
+<section class="slide" id="example10" align="center">
+    <h2>Sorting with Color Animation</h2>
+    <h3>Home Sales (1000's) in 2010 By State</h3>
+    <button id="sortButton3">Sort Data</button>
+     <script>
+    (function() {
+        // define dimensions of svg
+        var h = 400;
+        var w = 800;
+        var chartPadding = 50;
+        var chartBottom = h - chartPadding;
+        var chartRight = w - chartPadding;
+
+        // create svg element
+        var chart = d3.select('#example10')
+                      .append('svg')
+                      .attr('width', w)
+                      .attr('height', h);
+
+        // load data from a CSV file
+        d3.csv('data/homesales2010.csv', function(d) {
+                return {
+                    key: d.state,
+                    value: +d.value
+                };
+            },
+            function(dataset){
+
+                var barLabels = dataset.map(function(datum){
+                    return datum.key;
+                });
+
+                var maxValue = d3.max(dataset,function(d){ return d.value; });
+
+                var sortDir = 'asc'; 
+
+                // set up scales
+                var yScale = d3.scale
+                               .linear()
+                               .domain( [0,maxValue] )
+                               .range( [chartBottom,chartPadding] )
+                               .nice();
+
+                var xScale = d3.scale.ordinal()
+                               .domain(barLabels)
+                               .rangeRoundBands([chartPadding,chartRight], 0.1);
+                                // divides bands equally among total width, with 10% spacing.
+
+                var yAxis = d3.svg.axis()
+                                  .scale(yScale)
+                                  .orient('left')
+                                  .ticks(5);
+
+                var xAxis = d3.svg.axis()
+                                  .scale(xScale)
+                                  .orient('bottom')
+                                  .tickSize(0);
+
+                d3.select('button#sortButton3') // add listener to button to activate sorting
+                  .on('click',function(){
+                        sortChart();
+                  });
+
+                // create bars
+                chart.selectAll('rect')
+                   .data(dataset)
+                   .enter()
+                   .append('rect')
+                   .attr({
+                        'x': function(d,i) {
+                            return xScale(d.key);
+                        },
+                        'y': function(d) {
+                            return yScale(d.value);
+                        },
+                        'width': xScale.rangeBand(),
+                        'height': function(d) {
+                            return chartBottom - yScale(d.value);
+                        },
+                        'fill': 'red'
+                    })
+                   .on('mouseover',function(d){
+                        d3.select(this)
+                          .attr('fill','yellow');
+                          showValue(d);
+                   })
+                   .on('mouseout',function(d){
+                        d3.select(this)
+                          .transition()  // adds a "smoothing" animation to the transition
+                          .duration(500) // set the duration of the transition in ms (default = 250)
+                          .attr('fill','red');
+                          hideValue();
+                    });
+
+                var y_axis = chart.append('g')
+                                  .attr('class','axis')
+                                  .attr('transform','translate(' + chartPadding + ',0)');
+
+                yAxis(y_axis);
+
+                x_axis = chart.append('g')
+                     .attr('class', 'axis xAxis')
+                     .attr('transform','translate(0,' + chartBottom + ')')  // push to bottom
+                     .call(xAxis) // passes itself (g element) into xAxis function
+                     // rotate tick labels
+                     .selectAll('text')
+                        .style('text-anchor','end')
+                        .attr('transform','rotate(-65)');
+
+                var showValue = function(d) {
+                    chart.append('text')
+                         .text(d.value)
+                         .attr({
+                             'x': xScale(d.key) + xScale.rangeBand() / 2,
+                             'y': yScale(d.value) + 15,
+                             'class': 'value'
+                         });
+                }
+
+                var hideValue = function() {
+                    chart.select('text.value').remove();
+                }
+
+                var sortChart = function() {
+                    var newDomain = [];  // declare array to hold re-ordered ordinal domain for xScale
+                    chart.selectAll('rect')
+                         .sort(function(a,b) {
+                              if( sortDir == 'asc' ) {
+                                  return d3.ascending(a.value,b.value);       
+                              } else {
+                                  return d3.descending(a.value,b.value);
+                              }
+                         })
+                         .transition()
+                         .delay(function(d,i){   // add a delay() call before duration() call
+                             return i * 50;
+                             //return (i/dataset.length) * 1000;
+                         })
+                         .duration(1000)
+                         .attr('x',function(d,i){
+                              return xScale(i);  // re-position bars based on sorted positions
+                         })
+                         .attr('fill',function(d){
+                              return 'rgb(' + (d.value/maxValue * 255) + ',0,0)'; //  r of 0 - 255
+                         });
+
+                    chart.selectAll('rect')
+                         .each(function(d){
+                            newDomain.push( d.key );
+                         });
+
+                    xScale.domain( newDomain );
+
+                    chart.select('.axis.xAxis')
+                       .transition()
+                       .duration(1000)
+                       .call(xAxis)
+                       .selectAll('text')
+                       .style('text-anchor','end');
+
+                    sortDir = sortDir == 'asc' ? 'desc' : 'asc'; // flip the flag
+                }
+            }
+        );
+    })();
+    </script>
+</section>
+
+<section class="slide" id="chart-summary">
+    <h2>Creating a Bar Chart -- Summary</h2>
+    <ul>
+        <li>Obtain data in JS format</li>
+        <li class="slide">Create parent SVG element and bind data to it.</li>
+        <li class="slide">Create &amp; configure SVG elements (rects) to reflect data values.
+            <ul class="slide">
+                <li>Configure x (ordinal) and y (linear) scale functions to normalize values to chart dimensions.</li>
+                <li>Use scales to configure and display x and y axes for chart (using SVG group elements).</li>
+            </ul>
+        </li>
+        <li class="slide">Change underlying data of chart (e.g. sorting) and update chart to reflect data update.
+            <ul class="slide">
+                <li>Change the x attribute of the rect element.</li>
+                <li>Update the domain of the xScale and call() the xAxis() function to update the axis labels and bar values.</li>
+            </ul>
+        </li>
+        <li class="slide">Add transitions to animate the chart update.
+            <ul>
+                <li>Refine the transition by modifying the duration, th easing, and adding delay. </li>
+            </ul>
+        </li>
+    </ul>
+</section>
+
+<section class="slide" id="layouts-title">
+    <h2>Layouts</h2>
+    <ul>
+        <li>D3 has layout functions which facilitate the generation of specialized chart layouts:
+            <ul>
+                <li><a href="https://github.com/mbostock/d3/wiki/Bundle-Layout" target="_blank">Bundle</a></li>
+                <li><a href="https://github.com/mbostock/d3/wiki/Chord-Layout" target="_blank">Chord</a></li>
+                <li><a href="https://github.com/mbostock/d3/wiki/Cluster-Layout" target="_blank">Cluster</a></li>
+                <li><a href="https://github.com/mbostock/d3/wiki/Force-Layout" target="_blank">Force</a></li>
+                <li><a href="https://github.com/mbostock/d3/wiki/Hierarchy-Layout" target="_blank">Hierarchy</a></li>
+                <li><a href="https://github.com/mbostock/d3/wiki/Histogram-Layout" target="_blank">Histogram</a></li>
+                <li><a href="https://github.com/mbostock/d3/wiki/Pack-Layout" target="_blank">Pack</a></li>
+                <li><a href="https://github.com/mbostock/d3/wiki/Partition-Layout" target="_blank">Partition</a></li>
+                <li><a href="https://github.com/mbostock/d3/wiki/Pie-Layout" target="_blank">Pie</a></li>
+                <li><a href="https://github.com/mbostock/d3/wiki/Stack-Layout" target="_blank">Stack</a></li>
+                <li><a href="https://github.com/mbostock/d3/wiki/Tree-Layout" target="_blank">Tree</a></li>
+                <li><a href="https://github.com/mbostock/d3/wiki/Treemap-Layout" target="_blank">Treemap</a></li>
+            </ul>
+        </li>
+    </ul>
+</section>
+
+<section class="slide" id="pielayout">
+    <h2>Pie Layout -- Setup</h2>
+    <textarea name="code" class="code" globals="d3" runnable="true" mode="javascript" style="display:none;">
+// dimensions of our pie chart
+var h = 500,
+    w = 500;
+
+// define inner and outer radius for our chart
+var oRadius = w / 2;
+var iRadius = 0; // > 1 to create 'donut' chart
+
+// arc() function helps draw SVG paths for us -- need to pass in radii
+var arc = d3.svg.arc() 
+                .innerRadius(iRadius)
+                .outerRadius(oRadius);
+
+// generate sample data set
+var dataset = d3.range(6)
+                .map(function(index){
+                    return Math.floor(Math.random() * 50);
+                });
+
+// declare pie() function
+var pie = d3.layout.pie();
+
+
+console.log(dataset);
+console.log(pie(dataset));
+    </textarea>
+</section>
+
+<section class="slide" id="pieDraw">
+    <h2>Pie Layout -- Generate</h2>
+    <textarea name="code" class="code" mode="javascript" style="display:none;">
+// create parent SVG element for our chart
+var pieChart = d3.select('body')
+                 .append('svg')
+                 .attr({
+                        'width' : w,
+                        'height' : h
+                        });
+
+// d3.scale.category10() creates an ordinal scale of 10 different category colors
+var color = d3.scale.category10();
+
+// we'll use svg group elements for pie wedges
+var wedges = pieChart.selectAll('g')
+                .data(pie(dataset)) // pass in our 'pie-ized' data
+                .enter()
+                .append('g')
+                .attr({
+                    'class' : 'wedge',
+                    // we need to translate each wedge into the center
+                    'transform' : 'translate(' + oRadius + ', ' + oRadius + ')'
+                });
+
+    // draw arcs for wedges
+    wedges.append('path')
+        .attr({
+            'fill' : function(d,i) {
+                return color(i);
+            },
+            // pass in the arc generator for the 'd' attribute of the path,
+            // which is the path description
+            'd' : arc
+        });
+    </textarea>
+</section>
+
+<section class="slide" id="example11" align="center">
+    <h2>Our Pie Chart</h2>
+    <script>
+        (function(){
+             // dimensions of our pie chart
+            var h = 500,
+                w = 500;
+
+            // define inner and outer radius for our chart
+            var oRadius = w / 2;
+            var iRadius = 0; // we'll talk about this in a bit
+
+            // arc() function helps draw SVG paths for us -- need to pass in radii
+            var arc = d3.svg.arc() 
+                            .innerRadius(iRadius)
+                            .outerRadius(oRadius);
+
+            // generate sample data set
+            var dataset = d3.range(6)
+                            .map(function(index){
+                                return Math.floor(Math.random() * 50);
+                            });
+
+            // declare pie() function
+            var pie = d3.layout.pie();
+
+            var color = d3.scale.category10();          
+
+            // create parent SVG element for our chart
+            var pieChart = d3.select('#example11')
+                             .append('svg')
+                             .attr({
+                                    'width' : w,
+                                    'height' : h
+                                    });
+
+            // we'll use svg group elements for pie wedges
+            var wedges = pieChart.selectAll('g')
+                            .data(pie(dataset)) // pass in our 'pie-ized' data
+                            .enter()
+                            .append('g')
+                            .attr({
+                                'class' : 'wedge',
+                                // we need to translate each wedge into the center of the pie
+                                'transform' : 'translate(' + oRadius + ', ' + oRadius + ')'
+                            });
+
+                // draw arcs for wedges
+                wedges.append('path')
+                    .attr({
+                        'fill' : function(d,i) {
+                            // category10() creates an ordinal scale of 10 different category colors
+                            return color(i);
+                        },
+                        // pass in the arc generator for the 'd' attribute of the path,
+                        // which is the path description
+                        'd' : arc
+                    });
+        })();
+    </script>
+</section>
+
+<section class="slide" id="pieLabels">
+    <h2>Labels for the Pie</h2>
+    <textarea name="code" class="code" mode="javascript" style="display:none;">
+var labels = wedges.append('text')
+                   .attr({
+                       'transform' : function(d) {
+                           return 'translate(' + arc.centroid(d) + ')';
+                       },
+                       'text-anchor' : 'middle'
+                   })
+                   .text(function(d){
+                         return d.value;
+                   });
+    </textarea>
+    <br>
+    <ul>
+        <li><code>arc.centroid()</code> -- utility function that calculates the central point of any shape.</li>
+    </ul>
+</section>
+
+<section class="slide" id="example12" align="center">
+    <h2>Pie With Labels</h2>
+    <button id='updatePie'>Update Pie</button>
+    <script>
+        (function(){
+             // dimensions of our pie chart
+            var h = 400,
+                w = 400;
+
+            // define inner and outer radius for our chart
+            var oRadius = w / 2;
+            var iRadius = 0; // we'll talk about this in a bit
+
+            // arc() function helps draw SVG paths for us -- need to pass in radii
+            var arc = d3.svg.arc() 
+                            .innerRadius(iRadius)
+                            .outerRadius(oRadius);
+
+            var key = function(d)
+            {
+                return d.key;
+            }
+
+            var getData = function() {
+                var data = d3.range(6)
+                            .map(function(index){
+                                return Math.floor(Math.random() * 50);
+                               /* return {
+                                    'key' : index,
+                                    'value' : Math.floor(Math.random() * 50)
+                                }*/
+                            });
+                return data;
+            }
+            // generate sample data set
+            var dataset = getData();
+
+            // declare pie() function
+            //var pie = d3.layout.pie().value(function(d){return d;}).sort(null);
+            var pie = d3.layout.pie();
+
+            var color = d3.scale.category10();          
+
+            // create parent SVG element for our chart
+            var pieChart = d3.select('#example12')
+                             .append('svg')
+                             .attr({
+                                    'width' : w,
+                                    'height' : h
+                                    });
+
+            // we'll use svg group elements for pie wedges
+            var wedges = pieChart.selectAll('g')
+                            .data(pie(dataset)) // pass in our 'pie-ized' data
+                            .enter()
+                            .append('g')
+                            .attr({
+                                'class' : 'wedge1',
+                                // we need to translate each wedge into the center of the pie
+                                'transform' : 'translate(' + oRadius + ', ' + oRadius + ')'
+                            });
+
+            wedges.append('path')
+                  .attr({
+                      'fill' : function(d,i) {
+                          // category10() creates an ordinal scale of 10 different category colors
+                          return color(i);
+                      },
+                      // pass in the arc generator for the 'd' attribute of the path,
+                      // which is the path description
+                      'd' : arc
+                  });
+
+            //Labels
+            var labels = wedges.append('text')
+                  .attr({
+                      'transform' : function(d) {
+                          return 'translate(' + arc.centroid(d) + ')';
+                      },
+                      'text-anchor' : 'middle'
+                  })
+                  .text(function(d){
+                        return d.value;
+                  })
+                  .attr('class','pieLabels');
+
+            d3.select('button#updatePie')
+              .on('click',function(){
+                    updatePie();
+              });
+
+            var updatePie = function() {
+                var newData = getData();
+
+                wedges.data(pie(newData)) // pass in our 'pie-ized' data
+                      .select('path')
+                      .transition()
+                      .duration(1000)
+                      .ease('bounce')
+                      .attr({
+                          'fill' : function(d,i) {
+                              return color(i);
+                          },
+                          'd' : arc
+                      });
+
+                //Labels
+                labels.data(pie(newData))
+                      .transition()
+                      .duration(1000)
+                      .attr({
+                          'transform' : function(d) {
+                              return 'translate(' + arc.centroid(d) + ')';
+                          },
+                          'text-anchor' : 'middle'
+                      })
+                      .text(function(d){
+                            return d.value;
+                      })
+                      .attr('class','pieLabels');
+            }
+        })();
+    </script>
+</section>
+
+<section class="slide" id="pieLabels">
+    <h2>Pie Animations</h2>
+    <textarea name="code" class="code" mode="javascript" style="display:none;">
+// wrap data generation in a function
+var getData = function() {
+    var data = d3.range(6)
+                .map(function(index){
+                    return Math.floor(Math.random() * 50);
+                });
+    return data;
+}
+
+// bind this function to the click event of the button
+var updatePie = function() {
+    var newData = getData();
+
+    wedges.data(pie(newData)) // pass in our 'pie-ized' data
+          .select('path')
+          .transition()
+          .duration(1000)
+          .ease('bounce')
+          .attr({
+              'fill' : function(d,i) {
+                  return color(i);
+              },
+              'd' : arc
+          });
+
+    //Labels
+    labels.data(pie(newData))
+          .transition()
+          .duration(1000)
+          .attr({
+              'transform' : function(d) {
+                  return 'translate(' + arc.centroid(d) + ')';
+              },
+              'text-anchor' : 'middle'
+          })
+          .text(function(d){
+                return d.value;
+          });
+}
+    </textarea>
+</section>
+
+<section class="slide" id="example13" align="center">
+    <h2>Disable Sorting</h2>
+    <div align="left">
+    <textarea name="code" class="code" mode="javascript" style="display:none;">
+var pie = d3.layout.pie().sort(null);
+// instead of d3.layout.pie();
+    </textarea>
+    </div><br>
+    <button id='updatePie2'>Update Pie</button>
+    <script>
+        (function(){
+             // dimensions of our pie chart
+            var h = 400,
+                w = 400;
+
+            // define inner and outer radius for our chart
+            var oRadius = w / 2;
+            var iRadius = 0; // we'll talk about this in a bit
+
+            // arc() function helps draw SVG paths for us -- need to pass in radii
+            var arc = d3.svg.arc() 
+                            .innerRadius(iRadius)
+                            .outerRadius(oRadius);
+
+            var key = function(d)
+            {
+                return d.key;
+            }
+
+            var getData = function() {
+                var data = d3.range(6)
+                            .map(function(index){
+                                return Math.floor(Math.random() * 50);
+                               /* return {
+                                    'key' : index,
+                                    'value' : Math.floor(Math.random() * 50)
+                                }*/
+                            });
+                return data;
+            }
+            // generate sample data set
+            var dataset = getData();
+
+            // declare pie() function
+            var pie = d3.layout.pie().sort(null);
+            //var pie = d3.layout.pie();
+
+            var color = d3.scale.category10();          
+
+            // create parent SVG element for our chart
+            var pieChart = d3.select('#example13')
+                             .append('svg')
+                             .attr({
+                                    'width' : w,
+                                    'height' : h
+                                    });
+
+            // we'll use svg group elements for pie wedges
+            var wedges = pieChart.selectAll('g')
+                            .data(pie(dataset)) // pass in our 'pie-ized' data
+                            .enter()
+                            .append('g')
+                            .attr({
+                                'class' : 'wedge2',
+                                // we need to translate each wedge into the center of the pie
+                                'transform' : 'translate(' + oRadius + ', ' + oRadius + ')'
+                            });
+
+            wedges.append('path')
+                  .attr({
+                      'fill' : function(d,i) {
+                          // category10() creates an ordinal scale of 10 different category colors
+                          return color(i);
+                      },
+                      // pass in the arc generator for the 'd' attribute of the path,
+                      // which is the path description
+                      'd' : arc
+                  });
+
+            //Labels
+            var labels = wedges.append('text')
+                  .attr({
+                      'transform' : function(d) {
+                          return 'translate(' + arc.centroid(d) + ')';
+                      },
+                      'text-anchor' : 'middle'
+                  })
+                  .text(function(d){
+                        return d.value;
+                  })
+                  .attr('class','pieLabels');
+
+            d3.select('button#updatePie2')
+              .on('click',function(){
+                    updatePie();
+              });
+
+            var updatePie = function() {
+                var newData = getData();
+
+                wedges.data(pie(newData)) // pass in our 'pie-ized' data
+                      .select('path')
+                      .transition()
+                      .duration(1000)
+                      .attr({
+                          'fill' : function(d,i) {
+                              return color(i);
+                          },
+                          'd' : arc
+                      });
+
+                //wedges.selectAll('text').remove();
+
+                //Labels
+                labels.data(pie(newData))
+                      .transition()
+                      .duration(1000)
+                      .attr({
+                          'transform' : function(d) {
+                              return 'translate(' + arc.centroid(d) + ')';
+                          },
+                          'text-anchor' : 'middle'
+                      })
+                      .text(function(d){
+                            return d.value;
+                      })
+                      .attr('class','pieLabels');
+            }
+        })();
+    </script>
+</section>
+
+<section class="slide" id="resources">
+    <h2>Resources</h2>
+    <ul>
+        <li><a href="http://D3js.org/" target="_blank">D3js.org</a> (Examples, link to docs on Github site)</li>
+        <li><a href="http://dashingd3js.com" target="_blank">dashingd3js.com</a> (Tutorials &amp; Newsletter)</li>
+        <li><a href="http://d3noob.org" target="_blank">d3noob.org</a> (D3.js Tips and Tricks)</li>     
+        <li><a href="https://github.com/mbostock/d3/wiki/API-Reference" target="_blank">github.com/mbostock/d3/wiki/API-Reference</a> (API Reference)</li>
+        <li><a href="http://techslides.com/over-1000-d3-js-examples-and-demos/" target="_blank">techslides.com/over-1000-d3-js-examples-and-demos/</a> (Over 1000 Demos with Code)</li>
+        <li>D3.js and Data Viz User Groups</li>
+        <li>Book: Interactive Data Visualization for the Web by Scott Murray (O'Reilly, March 2013)</li>
+    </ul>
+</section>
+
+<section class="slide" id="questions">
+    <h2>Questions</h2>
+    <img src="assets/images/questions.jpg" alt="">
+
+</section>
+
+<!-- End slides. -->
+
+
+<!-- Begin extension snippets. Add or remove as needed. -->
+
+<!-- deck.navigation snippet -->
+<a href="#" class="deck-prev-link" title="Previous">&#8592;</a>
+<a href="#" class="deck-next-link" title="Next">&#8594;</a>
+
+<!-- deck.status snippet -->
+<p class="deck-status">
+	<span class="deck-status-current"></span>
+	/
+	<span class="deck-status-total"></span>
+</p>
+
+<!-- deck.goto snippet -->
+<form action="." method="get" class="goto-form">
+	<label for="goto-slide">Go to slide:</label>
+	<input type="text" name="slidenum" id="goto-slide" list="goto-datalist">
+	<datalist id="goto-datalist"></datalist>
+	<input type="submit" value="Go">
+</form>
+
+<!-- deck.hash snippet -->
+<a href="." title="Permalink to this slide" class="deck-permalink">#</a>
+
+<!-- End extension snippets. -->
+
+
+<!-- Required JS files. -->
+<script src="jquery-1.7.2.min.js"></script>
+<script src="core/deck.core.js"></script>
+<script src="extensions/codemirror/codemirror.js"></script>
+<script src="extensions/codemirror/mode/javascript/javascript.js"></script>
+<script src="extensions/codemirror/mode/xml/xml.js"></script>
+<script src="extensions/codemirror/mode/css/css.js"></script>
+<script src="extensions/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+
+<!-- Extension JS files. Add or remove as needed. -->
+<script src="core/deck.core.js"></script>
+<script src="extensions/hash/deck.hash.js"></script>
+<script src="extensions/menu/deck.menu.js"></script>
+<script src="extensions/goto/deck.goto.js"></script>
+<script src="extensions/status/deck.status.js"></script>
+<script src="extensions/navigation/deck.navigation.js"></script>
+<script src="extensions/codemirror/deck.codemirror.js"></script>
+
+<!--<script src="extensions/scale/deck.scale.js"></script>-->
+
+<!-- Initialize the deck. You can put this in an external file if desired. -->
+<script>
+	$(function() {
+		$.deck('.slide');
+	});
+</script>
+</body>
+</html>
