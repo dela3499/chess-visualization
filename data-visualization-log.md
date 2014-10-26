@@ -39,3 +39,6 @@ Customize d3 example bar chart with new data
 
 # Hour 14 (12:24pm, Sunday Oct 26, 2014)
 Debug chart
+
+# Hour 15 (1:24pm, Sunday Oct 26, 2014)
+Debug chart

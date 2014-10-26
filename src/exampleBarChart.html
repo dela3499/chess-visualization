@@ -2,7 +2,8 @@
 <!DOCTYPE html>
 <html>
 <head>	
-	<script src="d3/d3.min.js"></script>
+    <meta charset="utf-8">
+	<script src="d3/d3.js"></script>
 </head>
 	
 <body>
@@ -32,18 +33,13 @@
 
         // load data from a CSV file
         d3.json('data.json', function(d) {
-            return {
-                key: range(0,d.length - 1),
-                value: d
-            }
-        },
-            function(dataset){
-                var barLabels = dataset.map(function(datum){
-                    return datum.key;
-                });
-
-                var maxValue = d3.max(dataset,function(d){ return d.value; });
-
+                
+                var dataset = {
+                    key: range(0, d.length - 1),
+                    value: d
+                };
+                var barLabels = dataset.key
+                var maxValue = d3.max(dataset.value);
                 var sortDir = 'asc'; 
 
                 // set up scales
@@ -157,12 +153,12 @@
                               return 'rgb(' + (d.value/maxValue * 255) + ',0,0)'; //  r of 0 - 255
                          });
 
-                    chart.selectAll('rect')
-                         .each(function(d){
-                            newDomain.push( d.key );
-                         });
+//                    chart.selectAll('rect')
+//                         .each(function(d){
+//                            newDomain.push( d.key );
+//                         });
 
-                    xScale.domain( newDomain );
+//                    xScale.domain( newDomain );
 
                     chart.select('.axis.xAxis')
                        .transition()
