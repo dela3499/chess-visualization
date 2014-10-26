@@ -45,3 +45,13 @@ Debug chart
 
 # Hour 16 (2:30pm, Sunday Oct 26, 2014)
 Add interactive selection of different moves
+
+# Hour 17 (3:35pm, Sunday Oct 26, 2014)
+Finish adding interactive move selection
+
+# Hour 18 (5:47pm, Sunday Oct 26, 2014)
+Refactor graphic in Elm
+
+# Hour 19 (6:45pm, Sunday Oct 26, 2014)
+Continue refactoring graphic in Elm
+

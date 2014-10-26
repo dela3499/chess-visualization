@@ -14,20 +14,19 @@
 <script>
     
     // initialize move number
-    var MOVE = 1;
+    var MOVE = 0;
     
     // initialize data set
     var d;
     
     var handleMoveSlider = function (value) {
-        MOVE = value;
+        MOVE = value-1;
         render()
-        console.log(value);
     };
     
     // Set up a slider so I can select which move I'd like to consider
     var setupMoveSlider = d3.slider().on("slide", function(evt, value) {handleMoveSlider(value);})
-        .axis(true).min(1).max(40).step(1);
+        .axis(true).min(1).max(40).step(1).value(1);
     
     d3.select('#moveSlider').call(setupMoveSlider);
     
@@ -41,7 +40,7 @@
     }    
 
         // define dimensions of svg
-        var h = 800;
+        var h = 400;
         var w = 800;
         var chartPadding = 50;
         var chartBottom = h - chartPadding;
@@ -52,7 +51,7 @@
         // load data from a CSV file
         d3.json('data.json', function(data){
             d = data;
-//            render();
+            render();
         });   
                 
         var render = function() {
@@ -79,7 +78,7 @@
                 // set up scales
                 var yScale = d3.scale
                                .linear()
-                               .domain( [0,maxValue] )
+                               .domain( [0,100] )
                                .range( [chartBottom,chartPadding] )
                                .nice();
 
@@ -114,7 +113,6 @@
                             return xScale(d.key);
                         },
                         'y': function(d) {
-//                            console.log(["Setting y-value of rectangle", "d: " + d, "d.value: " + d.value])
                             return yScale(d.value);
                         },
                         'width': xScale.rangeBand(),
