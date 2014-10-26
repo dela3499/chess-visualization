@@ -11,7 +11,7 @@ def saturate (x, minimum, maximum):
 		return x
 
 def pointsTaken ():	
-	aggressiveness = random.choice([0,5,10])
+	aggressiveness = random.choice([0,5])
 	piecesToLose = random.choice([0] * 10 + [1,3] * aggressiveness)
 	return piecesToLose
 
@@ -68,4 +68,4 @@ def simulateGame ():
 nGames = 100
 x = distributionOfMaterial (nGames)
 with open('data.json', 'w') as outfile:
-	json.dump(x,outfile)
+	json.dump(x[7],outfile) # export the distribution of points for move 8
