@@ -7,6 +7,15 @@
 	
 <body>
 <script>
+    
+    // Make a range utility
+    function range(start, end) {
+        var foo = [];
+        for (var i = start; i <= end; i++) {
+            foo.push(i);
+        }
+        return foo;
+    }    
     (function() {
         // define dimensions of svg
         var h = 400;
@@ -22,7 +31,12 @@
                       .attr('height', h);
 
         // load data from a CSV file
-        d3.json('data.json',
+        d3.json('data.json', function(d) {
+            return {
+                key: range(0,d.length - 1),
+                value: d
+            }
+        },
             function(dataset){
                 var barLabels = dataset.map(function(datum){
                     return datum.key;
@@ -69,6 +83,7 @@
                             return xScale(d.key);
                         },
                         'y': function(d) {
+//                            console.log(["Setting y-value of rectangle", "d: " + d, "d.value: " + d.value])
                             return yScale(d.value);
                         },
                         'width': xScale.rangeBand(),

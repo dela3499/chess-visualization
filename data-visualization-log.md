@@ -36,3 +36,6 @@ Finish mocking up data for material distribution chart
 
 # Hour 13 (11:24pm, Sunday Oct 26, 2014)
 Customize d3 example bar chart with new data
+
+# Hour 14 (12:24pm, Sunday Oct 26, 2014)
+Debug chart

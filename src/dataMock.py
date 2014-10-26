@@ -24,21 +24,20 @@ def distributionOfMaterial (nGames):
 	games = [simulateGame() for x in range(nGames)]
 	# Find length of longest game
 	longestGameLength = max([len(game["nWhitePoints"]) for game in games])
-
-	def initDict(games,nKeys):
-		"Return dictionary with properly-initialized keys"
-		return {(key + 1): 0 for key in range(nKeys)}
 	
 	# Initialize data structure to hold all the distributions
-	moveDists = [initDict(games,78) for move in range(longestGameLength)]
+	moveDists = [[0]*79 for move in range(longestGameLength)]
 
 	# Iterate through each move of each game, and increment counters
 	for game in games:
-		totalPoints = []
-		for move in zip(game["nWhitePoints"],game["nBlackPoints"]):
-			totalPoints.append(move[0] + move[1])
-		for move, nPoints in enumerate(totalPoints):
-			moveDists[move][nPoints] += 1
+		
+		# Prepare the point counters (the points for black and white will be summed shortly)
+		nPoints = zip(game["nWhitePoints"],game["nBlackPoints"])
+
+		# Iterate through game, finding the total number of points on the board after each move, and incrementing counter
+		for move, points in enumerate(nPoints):
+			totalPoints = points[0] + points[1]
+			moveDists[move][totalPoints] += 1
 
 	return moveDists
 
