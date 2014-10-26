@@ -34,14 +34,18 @@
         // load data from a CSV file
         d3.json('data.json', function(d) {
                 
-                var dataset = {
-                    key: range(0, d.length - 1),
-                    value: d
-                };
-                var barLabels = dataset.key
-                var maxValue = d3.max(dataset.value);
+                var barLabels = range(0, d.length - 1)
+                var maxValue = d3.max(d);
                 var sortDir = 'asc'; 
-
+                var dataset = []
+                
+                for (var i=0; i<d.length; i++) {
+                    dataset.push({
+                        key: i,
+                        value: d[i]
+                    });
+                };
+                
                 // set up scales
                 var yScale = d3.scale
                                .linear()
@@ -153,12 +157,12 @@
                               return 'rgb(' + (d.value/maxValue * 255) + ',0,0)'; //  r of 0 - 255
                          });
 
-//                    chart.selectAll('rect')
-//                         .each(function(d){
-//                            newDomain.push( d.key );
-//                         });
+                    chart.selectAll('rect')
+                         .each(function(d){
+                            newDomain.push( d.key );
+                         });
 
-//                    xScale.domain( newDomain );
+                    xScale.domain( newDomain );
 
                     chart.select('.axis.xAxis')
                        .transition()
