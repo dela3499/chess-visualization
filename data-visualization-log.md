@@ -42,3 +42,6 @@ Debug chart
 
 # Hour 15 (1:24pm, Sunday Oct 26, 2014)
 Debug chart
+
+# Hour 16 (2:30pm, Sunday Oct 26, 2014)
+Add interactive selection of different moves

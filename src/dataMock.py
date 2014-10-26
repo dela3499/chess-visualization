@@ -67,4 +67,4 @@ def simulateGame ():
 nGames = 100
 x = distributionOfMaterial (nGames)
 with open('data.json', 'w') as outfile:
-	json.dump(x[7],outfile) # export the distribution of points for move 8
+	json.dump(x,outfile) # export the distribution of points for move 8

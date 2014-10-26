@@ -4,10 +4,31 @@
 <head>	
     <meta charset="utf-8">
 	<script src="d3/d3.js"></script>
+    <script src="d3/d3.slider.js"></script>
+    <link rel="stylesheet" href="d3/d3.slider.css" />  
 </head>
 	
 <body>
+    <div id="moveSlider"></div>
 <script>
+    
+    // initialize move number
+    var MOVE = 1;
+    
+    // initialize data set
+    var d;
+    
+    var handleMoveSlider = function (value) {
+        MOVE = value;
+        render()
+        console.log(value);
+    };
+    
+    // Set up a slider so I can select which move I'd like to consider
+    var setupMoveSlider = d3.slider().on("slide", function(evt, value) {handleMoveSlider(value);})
+        .axis(true).min(1).max(40).step(1);
+    
+    d3.select('#moveSlider').call(setupMoveSlider);
     
     // Make a range utility
     function range(start, end) {
@@ -17,10 +38,10 @@
         }
         return foo;
     }    
-    (function() {
+
         // define dimensions of svg
         var h = 400;
-        var w = 800;
+        var w = 400;
         var chartPadding = 50;
         var chartBottom = h - chartPadding;
         var chartRight = w - chartPadding;
@@ -32,17 +53,24 @@
                       .attr('height', h);
 
         // load data from a CSV file
-        d3.json('data.json', function(d) {
+        d3.json('data.json', function(data){
+            d = data;
+//            render();
+        });   
                 
-                var barLabels = range(0, d.length - 1)
-                var maxValue = d3.max(d);
+        var render = function() {
+
+                // get dataset that corresponds to a single move
+                var d_subset = d[MOVE];
+                var barLabels = range(0, d_subset.length - 1)
+                var maxValue = d3.max(d_subset);
                 var sortDir = 'asc'; 
                 var dataset = []
                 
-                for (var i=0; i<d.length; i++) {
+                for (var i=0; i<d_subset.length; i++) {
                     dataset.push({
                         key: i,
-                        value: d[i]
+                        value: d_subset[i]
                     });
                 };
                 
@@ -68,6 +96,7 @@
                                   .orient('bottom')
                                   .tickSize(0);
 
+            
                 d3.select('button#sortButton3') // add listener to button to activate sorting
                   .on('click',function(){
                         sortChart();
@@ -173,9 +202,7 @@
 
                     sortDir = sortDir == 'asc' ? 'desc' : 'asc'; // flip the flag
                 }
-            }
-        );
-    })();
+            };
 </script>    	
 
 </body>
