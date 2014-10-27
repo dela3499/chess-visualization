@@ -55,3 +55,6 @@ Refactor graphic in Elm
 # Hour 19 (6:45pm, Sunday Oct 26, 2014)
 Continue refactoring graphic in Elm
 
+# Hour 20 (7:50pm, Sunday Oct 26, 2014)
+Fix ports and get interactive dataflow working
+

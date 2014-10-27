@@ -2,6 +2,7 @@
 <html>
 <head>
 	<script src="elm-runtime.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="build/elmChart.js"></script>
 </head>
 	
@@ -16,12 +17,17 @@
                 return x;
             };
         };
-        var myData = [[1,2,3],[10,20,30],[100,200,300]];
-        var chart = Elm.fullscreen(Elm.BarChart, {dataset: myData[1]});
-        chart.ports.move.subscribe(function (move) {
-            console.log(move);
-            chart.ports.dataset.send(myData[saturate(move, 0, myData.length - 1)]);
+        var myData;
+        $.getJSON("data.json", function (data) {
+            console.log(data);
+            myData = data;
+            var chart = Elm.fullscreen(Elm.BarChart, {dataset: myData[1]});
+            chart.ports.moveInput.subscribe(function (move) {
+                console.log(move);
+                chart.ports.dataset.send(myData[saturate(move, 0, myData.length - 1)]);
+            });
         });
+
     </script>
 </body>
 </html>
