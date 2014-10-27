@@ -30,15 +30,6 @@ Elm.BarChart.make = function (_elm) {
    var Transform2D = Elm.Transform2D.make(_elm);
    var Window = Elm.Window.make(_elm);
    var _op = {};
-   var createBar = F3(function (i,
-   w,
-   h) {
-      return Graphics.Collage.move({ctor: "_Tuple2"
-                                   ,_0: i * w
-                                   ,_1: 0})(A2(Graphics.Collage.filled,
-      Color.red,
-      A2(Graphics.Collage.rect,w,h)));
-   });
    var scaleInput = function (x) {
       return x / 50 | 0;
    };
@@ -58,6 +49,21 @@ Elm.BarChart.make = function (_elm) {
    var config = {_: {}
                 ,h: 800
                 ,w: 1500};
+   var createBar = F3(function (i,
+   w,
+   h) {
+      return function () {
+         var y = Basics.toFloat(config.h) / 2;
+         var x = Basics.toFloat(config.w) / 2;
+         return Graphics.Collage.move({ctor: "_Tuple2"
+                                      ,_0: i * w - x
+                                      ,_1: 0 - y})(A2(Graphics.Collage.filled,
+         Color.red,
+         A2(Graphics.Collage.rect,
+         w,
+         h * 7)));
+      }();
+   });
    var createBarChart = function (d) {
       return function () {
          var w = Basics.toFloat(config.w / List.length(d) | 0);

@@ -16,19 +16,16 @@ scaleInput: number -> number
 scaleInput x = x `div` 50
 
 createBar: number -> number -> number -> Form
-createBar i w h  = filled red (rect w h) |> move (i * w, 0)
+createBar i w h  = 
+    let x = (toFloat config.w) / 2
+        y = (toFloat config.h) / 2
+    in filled red (rect w (h*7)) |> move (i * w - x , -y)
 
 createBarChart: [number] -> [Form]
 createBarChart d = 
     let w = toFloat (config.w `div` (length d))
     in map (\t -> createBar (toFloat (fst t)) w (snd t))  (zip [0..(length d) - 1] d)
-    -- in map (\t -> createBar (fst t) w (snd t))  (zip d d)
-
-
-align: Form -> Form
-align f = f |> move (0.5 * toFloat(bw - c.w), -75)
-scaleChart m forms = groupTransform (Transform2D.scaleY m) forms
-
+    
 render: [number] -> Element
 render ds = collage config.w config.h (createBarChart ds)
   
