@@ -21,10 +21,8 @@ barchart: [number] -> {h: number, w: number} -> Element
 barchart dataset config = 
   let c = config
       barWidth = c.w `div` (length dataset)
-      --align form = form |> move (-0.5 * toFloat(c.w) + toFloat(barWidth) * 0.5, -(toFloat c.h) / 2)
       align form = form |> move (-0.5 * toFloat(c.w) + toFloat(barWidth) * 0.5, -75)
       scaleChart m forms = groupTransform (Transform2D.scaleY m) forms
-  --in collage c.w c.h [(createBars dataset barWidth 0 |> align |> scaleChart 5)]
   in collage c.w c.h [(createBars dataset barWidth 0 |> scaleChart 5 |> align)]
   
 createBars: [number] -> number -> number -> [Form]

@@ -59,4 +59,10 @@ Continue refactoring graphic in Elm
 Fix ports and get interactive dataflow working
 
 # Hour 21 (9:34pm, Monday Oct 27, 2014)
-Fix ports and get interactive dataflow working
+Mock up data for new chart
+
+# Hour 22 (10:35pm, Monday Oct 27, 2014)
+Start writing Elm visualization for main chart
+
+# Hour 23 (1:17pm, Monday Oct 27, 2014)
+Define layout technique for Elm chart
