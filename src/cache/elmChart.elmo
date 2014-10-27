@@ -30,90 +30,64 @@ Elm.BarChart.make = function (_elm) {
    var Transform2D = Elm.Transform2D.make(_elm);
    var Window = Elm.Window.make(_elm);
    var _op = {};
-   var createBars = F3(function (list,
-   barWidth,
-   i) {
-      return function () {
-         switch (list.ctor)
-         {case "::": return function () {
-                 var restBars = A3(createBars,
-                 list._1,
-                 barWidth,
-                 i + 1);
-                 var firstBar = Graphics.Collage.move({ctor: "_Tuple2"
-                                                      ,_0: i * barWidth
-                                                      ,_1: list._0 / 2})(A2(Graphics.Collage.filled,
-                 Color.red,
-                 A2(Graphics.Collage.rect,
-                 barWidth,
-                 list._0)));
-                 return {ctor: "::"
-                        ,_0: firstBar
-                        ,_1: restBars};
-              }();
-            case "[]":
-            return _L.fromArray([]);}
-         _E.Case($moduleName,
-         "between lines 32 and 38");
-      }();
+   var createBar = F3(function (i,
+   w,
+   h) {
+      return Graphics.Collage.move({ctor: "_Tuple2"
+                                   ,_0: i * w
+                                   ,_1: 0})(A2(Graphics.Collage.filled,
+      Color.red,
+      A2(Graphics.Collage.rect,w,h)));
    });
-   var barchart = F2(function (dataset,
-   config) {
-      return function () {
-         var scaleChart = F2(function (m,
-         forms) {
-            return A2(Graphics.Collage.groupTransform,
-            Transform2D.scaleY(m),
-            forms);
-         });
-         var c = config;
-         var barWidth = c.w / List.length(dataset) | 0;
-         var align = function (form) {
-            return Graphics.Collage.move({ctor: "_Tuple2"
-                                         ,_0: -0.5 * Basics.toFloat(c.w) + Basics.toFloat(barWidth) * 0.5
-                                         ,_1: -75})(form);
-         };
-         return A3(Graphics.Collage.collage,
-         c.w,
-         c.h,
-         _L.fromArray([align(scaleChart(5)(A3(createBars,
-         dataset,
-         barWidth,
-         0)))]));
-      }();
-   });
-   var config = Signal.constant({_: {}
-                                ,h: 800
-                                ,w: 1500});
-   var scaleInput = F2(function (pos,
-   width) {
-      return pos / 50 | 0;
-   });
+   var scaleInput = function (x) {
+      return x / 50 | 0;
+   };
    var moveInput = Native.Ports.portOut("moveInput",
    Native.Ports.outgoingSignal(function (v) {
       return v;
    }),
-   A2(Signal._op["~"],
    A2(Signal._op["<~"],
    scaleInput,
-   Mouse.x),
-   Window.width));
+   Mouse.x));
    var dataset = Native.Ports.portIn("dataset",
    Native.Ports.incomingSignal(function (v) {
       return _U.isJSArray(v) ? _L.fromArray(v.map(function (v) {
          return typeof v === "number" ? v : _E.raise("invalid input, expecting JSNumber but got " + v);
       })) : _E.raise("invalid input, expecting JSArray but got " + v);
    }));
-   var main = A2(Signal._op["~"],
-   A2(Signal._op["<~"],
-   barchart,
-   dataset),
-   config);
+   var config = {_: {}
+                ,h: 800
+                ,w: 1500};
+   var createBarChart = function (d) {
+      return function () {
+         var w = Basics.toFloat(config.w / List.length(d) | 0);
+         return A2(List.map,
+         function (t) {
+            return A3(createBar,
+            Basics.toFloat(Basics.fst(t)),
+            w,
+            Basics.snd(t));
+         },
+         A2(List.zip,
+         _L.range(0,List.length(d) - 1),
+         d));
+      }();
+   };
+   var render = function (ds) {
+      return A3(Graphics.Collage.collage,
+      config.w,
+      config.h,
+      createBarChart(ds));
+   };
+   var main = A2(Signal.lift,
+   render,
+   dataset);
    _elm.BarChart.values = {_op: _op
-                          ,scaleInput: scaleInput
                           ,config: config
-                          ,barchart: barchart
-                          ,createBars: createBars
+                          ,scaleInput: scaleInput
+                          ,createBar: createBar
+                          ,createBarChart: createBarChart
+                          ,render: render
                           ,main: main};
    return _elm.BarChart.values;
 };

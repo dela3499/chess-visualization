@@ -4,36 +4,34 @@ import Mouse
 import Window
 import Transform2D
 
-port dataset : Signal [Int]
+config: {h: Int, w: Int}
+config = { h = 800, w = 1500 }
+
+port dataset : Signal [Float]
 
 port moveInput : Signal Int
-port moveInput = scaleInput <~ Mouse.x ~ Window.width
+port moveInput = scaleInput <~ Mouse.x
   
-scaleInput: number -> number -> number
-scaleInput pos width = pos`div` 50  
+scaleInput: number -> number
+scaleInput x = x `div` 50
 
-config = constant {
-  h = 800, 
-  w = 1500
-  }  
+createBar: number -> number -> number -> Form
+createBar i w h  = filled red (rect w h) |> move (i * w, 0)
 
-barchart: [number] -> {h: number, w: number} -> Element
-barchart dataset config = 
-  let c = config
-      barWidth = c.w `div` (length dataset)
-      align form = form |> move (-0.5 * toFloat(c.w) + toFloat(barWidth) * 0.5, -75)
-      scaleChart m forms = groupTransform (Transform2D.scaleY m) forms
-  in collage c.w c.h [(createBars dataset barWidth 0 |> scaleChart 5 |> align)]
-  
-  
-createBars: [number] -> number -> number -> [Form]
-createBars list barWidth i = 
-  case list of
-    [] -> []
-    head::tail -> 
-      let firstBar = filled red (rect barWidth head) |> move (i * barWidth, (head / 2))
-          restBars = createBars tail barWidth (i + 1) 
-      in firstBar :: restBars
+createBarChart: [number] -> [Form]
+createBarChart d = 
+    let w = toFloat (config.w `div` (length d))
+    in map (\t -> createBar (toFloat (fst t)) w (snd t))  (zip [0..(length d) - 1] d)
+    -- in map (\t -> createBar (fst t) w (snd t))  (zip d d)
+
+
+align: Form -> Form
+align f = f |> move (0.5 * toFloat(bw - c.w), -75)
+scaleChart m forms = groupTransform (Transform2D.scaleY m) forms
+
+render: [number] -> Element
+render ds = collage config.w config.h (createBarChart ds)
   
 main: Signal Element    
-main = barchart <~ dataset ~ config
+main = lift render dataset
+
