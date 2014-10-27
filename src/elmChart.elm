@@ -25,6 +25,7 @@ barchart dataset config =
       scaleChart m forms = groupTransform (Transform2D.scaleY m) forms
   in collage c.w c.h [(createBars dataset barWidth 0 |> scaleChart 5 |> align)]
   
+  
 createBars: [number] -> number -> number -> [Form]
 createBars list barWidth i = 
   case list of

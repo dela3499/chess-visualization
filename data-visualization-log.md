@@ -66,3 +66,6 @@ Start writing Elm visualization for main chart
 
 # Hour 23 (1:17pm, Monday Oct 27, 2014)
 Define layout technique for Elm chart
+
+# Hour 24 (2:17pm, Monday Oct 27, 2014)
+Read first chapter of Grammar of Graphics

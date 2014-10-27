@@ -6,7 +6,6 @@ For the X-axis view, I'll be showing some data for a single game. The number of 
 I haven't really thought much about what should happen when hovering on a axis view. I suppose hovering on an x-axis view should show a point view. There should be a translucent vertical line on the display, and you should be able to hover over each line to see the relevant point value. 
 
 Then, for a y-axis view, I guess it should just show some numeric data relevant to the histogram bar being hovered over. Also, it might be good to show two distributions: one for total points, and one for difference in points. Perhaps the distribution of advantages should be in a subset plot in the corner of the main plot. 
-
 Given this design, what's next? 
 I'll need to define the data for each one. 
 
