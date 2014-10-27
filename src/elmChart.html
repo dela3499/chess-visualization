@@ -20,7 +20,7 @@
         var myData;
         $.getJSON("data.json", function (data) {
             console.log(data);
-            myData = data;
+            myData = data["moveDists"];
             var chart = Elm.fullscreen(Elm.BarChart, {dataset: myData[1]});
             chart.ports.moveInput.subscribe(function (move) {
                 console.log(move);
