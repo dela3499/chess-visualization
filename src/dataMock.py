@@ -17,8 +17,9 @@ def pointsTaken ():
 
 # Bar Chart - distribution of games with different levels of material
 
-def distributionOfMaterial (nGames):
+def getData (nGames):
 	"Return arbitrary distribution of material for N games, for each move"
+	"Return list of games, where elements show total number of points on the board "
 
 	# Simulate the number pieces in gameplay
 	games = [simulateGame() for x in range(nGames)]
@@ -27,19 +28,25 @@ def distributionOfMaterial (nGames):
 	
 	# Initialize data structure to hold all the distributions
 	moveDists = [[0]*79 for move in range(longestGameLength)]
+	nPointsByGame = []
 
 	# Iterate through each move of each game, and increment counters
 	for game in games:
 		
 		# Prepare the point counters (the points for black and white will be summed shortly)
 		nPoints = zip(game["nWhitePoints"],game["nBlackPoints"])
-
+		nPointsTotal = []
+		
 		# Iterate through game, finding the total number of points on the board after each move, and incrementing counter
 		for move, points in enumerate(nPoints):
 			totalPoints = points[0] + points[1]
+			nPointsTotal.append(totalPoints)
 			moveDists[move][totalPoints] += 1
 
-	return moveDists
+		# Add game to list of games (each games is just a list of nPieces after each move)
+		nPointsByGame.append(nPointsTotal)
+
+	return {"moveDists": moveDists, "nPointsByGame": nPointsByGame}
 
 def simulateGame ():
 	"""Return a list of integers representing 
@@ -65,6 +72,10 @@ def simulateGame ():
 	return {"nWhitePoints": nWhitePoints, "nBlackPoints": nBlackPoints}
 
 nGames = 100
-x = distributionOfMaterial (nGames)
-with open('data.json', 'w') as outfile:
-	json.dump(x,outfile) # export the distribution of points for move 8
+
+def mockupDistribution (nGames): 
+	x = getData (nGames)
+	with open('data.json', 'w') as outfile:
+		json.dump(x,outfile) 
+
+mockupDistribution(nGames)
