@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="elm-runtime.js"></script>
+    <script src="build/elmChart.js"></script>
+</head>
+	
+<body>
+    <script>
+        var saturate = function (x, min, max) {
+            if (x > max) {
+                return max;
+            } else if (x < min) {
+                return min;
+            } else {
+                return x;
+            };
+        };
+        var myData = [[1,2,3],[10,20,30],[100,200,300]];
+        var chart = Elm.fullscreen(Elm.BarChart, {dataset: myData[1]});
+        chart.ports.move.subscribe(function (move) {
+            console.log(move);
+            chart.ports.dataset.send(myData[saturate(move, 0, myData.length - 1)]);
+        });
+    </script>
+</body>
+</html>
+    
