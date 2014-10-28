@@ -3,36 +3,35 @@ module BarChart where
 import Mouse
 import Window
 
-indexedMap: (Int -> a -> b) -> [a] -> [b]
-indexedMap f list =  
-  let indexes = [0 .. (length list - 1)]
-  in zipWith f indexes list
 
-config: {h: Float, w: Float}
-config = { h = 800, w = 1500 }
+-- Ports --
+port dataset : Signal [Float] -- from JS
 
-port dataset : Signal [Float]
+scaleInput: number -> number -> number
+scaleInput s x = x // s
 
-port moveInput : Signal Int
-port moveInput = scaleInput <~ Mouse.x
-  
-scaleInput: number -> number
-scaleInput x = x `div` 50
+port moveInput : Signal Int -- to JS
+port moveInput = (scaleInput 50) <~ Mouse.x
 
-createBar: number -> number -> number -> Form
-createBar i h w  = 
+
+-- Chart --
+config: {h: number, w: number}
+config = { h = 800, w = 1500 }  
+
+makeBar: number -> number -> number -> Form
+makeBar i h w  = 
     let x = config.w / 2
         y = config.h / 2
     in filled red (rect w (h*7)) |> move (i * w - x , -y)
 
-createBarChart: [number] -> [Form]
-createBarChart d = 
+makeChart: [number] -> [Form]
+makeChart d = 
     let w  = config.w / toFloat(length d)
-        cb i h = createBar i h w
+        cb i h = makeBar i h w
     in indexedMap cb d
     
-render: [number] -> render
-Element ds = collage config.w config.h (createBarChart ds)
+render: [number] -> Element
+render ds = collage config.w config.h (makeChart ds)
   
 main: Signal Element    
 main = lift render dataset

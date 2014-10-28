@@ -78,3 +78,6 @@ Update Elm (some new functionality is required for the refactor)
 
 # Hour 27 (1:00pm, Tuesday Oct 28, 2014)
 Continue updating Elm (unsuccessfully) and write indexedMap function
+
+# Hour 28 (2:19pm, Tuesday Oct 28, 2014)
+Debug and refactor Elm code for simple graphic
