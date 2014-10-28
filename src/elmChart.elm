@@ -2,9 +2,13 @@ module BarChart where
     
 import Mouse
 import Window
-import Transform2D
 
-config: {h: Int, w: Int}
+indexedMap: (Int -> a -> b) -> [a] -> [b]
+indexedMap f list =  
+  let indexes = [0 .. (length list - 1)]
+  in zipWith f indexes list
+
+config: {h: Float, w: Float}
 config = { h = 800, w = 1500 }
 
 port dataset : Signal [Float]
@@ -16,19 +20,19 @@ scaleInput: number -> number
 scaleInput x = x `div` 50
 
 createBar: number -> number -> number -> Form
-createBar i w h  = 
-    let x = (toFloat config.w) / 2
-        y = (toFloat config.h) / 2
+createBar i h w  = 
+    let x = config.w / 2
+        y = config.h / 2
     in filled red (rect w (h*7)) |> move (i * w - x , -y)
 
 createBarChart: [number] -> [Form]
 createBarChart d = 
-    let w = toFloat (config.w `div` (length d))
-    in map (\t -> createBar (toFloat (fst t)) w (snd t))  (zip [0..(length d) - 1] d)
+    let w  = config.w / toFloat(length d)
+        cb i h = createBar i h w
+    in indexedMap cb d
     
-render: [number] -> Element
-render ds = collage config.w config.h (createBarChart ds)
+render: [number] -> render
+Element ds = collage config.w config.h (createBarChart ds)
   
 main: Signal Element    
 main = lift render dataset
-

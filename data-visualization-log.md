@@ -69,3 +69,12 @@ Define layout technique for Elm chart
 
 # Hour 24 (2:17pm, Monday Oct 27, 2014)
 Read first chapter of Grammar of Graphics
+
+# Hour 25 (4:17pm, Monday Oct 27, 2014)
+Refactor Elm code with Suren
+
+# Hour 26 (10:50am, Tuesday Oct 28, 2014)
+Update Elm (some new functionality is required for the refactor)
+
+# Hour 27 (1:00pm, Tuesday Oct 28, 2014)
+Continue updating Elm (unsuccessfully) and write indexedMap function
