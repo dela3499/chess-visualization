@@ -22,17 +22,17 @@ config = { h = 800, w = 1500 }
 makeBar: Float -> Float -> Float -> Float -> Form
 makeBar w h x y = filled red (rect w h) |> move (x,y)
 
-makeChart: Config -> DataSeries
+makeChart: Config -> DataSeries -> [Form]
 makeChart c d = 
   let
-    barWidth = c.width / (length d)
-    yOffset = -c.height / 2
-    drawBar xOffset barHeight = makeBar barWidth barHeight xOffset yOffset
+    w = c.w / (length d)
+    y = -c.h / 2
     indexes = [0 .. (length d - 1)]
-    xOffsets = map (\i -> (i * barWidth) - (config.width / 2)) indexes
-    barHeights = map (scale 50) d
+    xs = map (\i -> (i * w) - (c.w / 2)) indexes
+    hs = map (scale 50) d
+    drawBar x h = makeBar w h x y
   in 
-    zipWith drawBar xOffsets barHeights
+    zipWith drawBar xs hs
 
 render: Config -> DataSeries -> Element
 render c d = collage c.w c.h (makeChart c d)
